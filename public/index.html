@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gametey — ألعاب عربية سريعة والعب واربح النقاط</title>
+<meta name="description" content="منصة ألعاب عربية مجانية: الأفعى، الذاكرة، سرعة البديهة، و2048. العب مباشرة من المتصفح وتنافس على لوحة الصدارة.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header><div class="wrap nav">
+  <div class="logo">🎮 <span>Gametey</span></div>
+  <nav class="nav-links">
+    <a href="#games">الألعاب</a><a href="#pro">اشترك</a><a href="/dashboard.html">لوحة الأرباح</a>
+  </nav>
+  <button class="btn btn-gold" onclick="goPro('header')">جرّب PRO</button>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>العب فورًا. تنافس. <em>تصدّر القائمة.</em></h1>
+    <p>أربع ألعاب سريعة تعمل داخل المتصفح بدون تحميل — مصمّمة للعرب، تعمل على الجوال والحاسوب.</p>
+    <button class="btn btn-gold" onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">ابدأ اللعب مجانًا</button>
+    <div class="stats-row">
+      <div class="stat"><b id="s-plays">0</b><small>جولة لُعِبت</small></div>
+      <div class="stat"><b id="s-scores">0</b><small>نتيجة مسجّلة</small></div>
+      <div class="stat"><b>4</b><small>ألعاب</small></div>
+    </div>
+  </section>
+
+  <div class="ad" id="ad1"><b>مساحة إعلانية 728×90</b>ضع هنا كود AdSense / شريك إعلاني — يتم تتبّع الظهور تلقائيًا</div>
+
+  <h2 class="sec" id="games">🔥 الألعاب</h2>
+  <div class="grid" id="grid"></div>
+
+  <div class="ad" id="ad2"><b>إعلان داخلي 336×280</b>يظهر بعد انتهاء كل جولة للاعبين المجانيين</div>
+
+  <h2 class="sec" id="pro">💎 اشتراك PRO</h2>
+  <div class="pricing">
+    <div class="plan">
+      <h3>مجاني</h3><div class="price">0 <small>ريال</small></div>
+      <ul><li>كل الألعاب</li><li>لوحة الصدارة</li><li>إعلانات بين الجولات</li></ul>
+      <button class="btn btn-ghost" style="width:100%">أنت هنا</button>
+    </div>
+    <div class="plan pro">
+      <h3>PRO شهري</h3><div class="price">4.99 <small>$ / شهر</small></div>
+      <ul><li>بدون أي إعلانات</li><li>شارة ذهبية بجانب اسمك</li><li>حفظ النتائج والإحصائيات</li><li>سمات ألوان حصرية</li></ul>
+      <button class="btn btn-gold" style="width:100%" onclick="goPro('monthly')">اشترك الآن</button>
+    </div>
+    <div class="plan">
+      <h3>PRO سنوي</h3><div class="price">39 <small>$ / سنة</small></div>
+      <ul><li>كل مزايا PRO</li><li>توفير 35%</li><li>وصول مبكر للألعاب الجديدة</li></ul>
+      <button class="btn btn-ghost" style="width:100%" onclick="goPro('yearly')">وفّر 35%</button>
+    </div>
+  </div>
+</main>
+
+<footer class="wrap">Gametey © 2026 — منصة ألعاب عربية · <a href="/dashboard.html">لوحة الأرباح</a></footer>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<script src="/js/games.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

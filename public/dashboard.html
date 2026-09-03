@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة الأرباح — Gametey</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<header><div class="wrap nav"><a class="logo" href="/">🎮 <span>Gametey</span></a>
+<nav class="nav-links"><a href="/">الرئيسية</a></nav></div></header>
+<main class="wrap">
+  <h2 class="sec">📊 لوحة الأرباح</h2>
+  <div class="grid" id="k"></div>
+  <h2 class="sec">💡 كيف تربح فعليًا</h2>
+  <div class="pricing">
+    <div class="plan"><h3>1. الإعلانات</h3><ul><li>سجّل في Google AdSense</li><li>الصق كود الوحدة داخل عناصر .ad</li><li>الدخل ≈ عدد الظهور ÷ 1000 × eCPM</li></ul></div>
+    <div class="plan pro"><h3>2. الاشتراكات</h3><ul><li>Stripe / Paddle / تابي</li><li>استبدل دالة pay() في app.js</li><li>الهامش الأعلى ربحية</li></ul></div>
+    <div class="plan"><h3>3. الرعاية والبيانات</h3><ul><li>ألعاب برعاية علامة تجارية</li><li>بيع مساحات بانر مباشرة</li><li>نشرة بريدية للاعبين</li></ul></div>
+  </div>
+</main>
+<footer class="wrap">تقديرات بناءً على eCPM 4.5$ وتحويل 12%</footer>
+<script>
+fetch('/api/stats').then(r=>r.json()).then(s=>{
+  const cards=[['🎯','جولات لُعبت',s.plays],['👁️','ظهور إعلاني',s.adViews],['💎','نقرات ترقية',s.upgrades],
+  ['💵','دخل إعلاني مُقدّر','$'+s.estimatedAdRevenue],['🏦','دخل اشتراكات مُقدّر','$'+s.estimatedSubRevenue],
+  ['📈','إجمالي مُقدّر','$'+(s.estimatedAdRevenue+s.estimatedSubRevenue).toFixed(2)]];
+  document.getElementById('k').innerHTML=cards.map(c=>`<div class="card" style="cursor:default"><div class="ico">${c[0]}</div><p>${c[1]}</p><h3 style="font-size:28px;color:var(--acc)">${c[2]}</h3></div>`).join('');
+});
+</script>
+</body></html>
