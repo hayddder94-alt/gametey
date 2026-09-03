@@ -1,0 +1,40 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div class="panel">
+  <div class="panel-head"><h3>إضافة تصنيف جديد</h3></div>
+  <div class="panel-body">
+    <form id="newCatForm" style="display:flex;gap:10px;flex-wrap:wrap">
+      <input type="text" name="name" placeholder="اسم التصنيف" required style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--line);border-radius:8px">
+      <input type="text" name="description" placeholder="وصف قصير (اختياري)" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--line);border-radius:8px">
+      <input type="number" name="sort_order" value="0" style="width:90px;padding:10px;border:1.5px solid var(--line);border-radius:8px" title="الترتيب">
+      <button class="btn btn-gold">إضافة</button>
+    </form>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>التصنيفات الحالية</h3></div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead><tr><th>الاسم</th><th>الوصف</th><th>عدد المنتجات</th><th>الترتيب</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+      <tbody>
+        <% categories.forEach(function(c){ %>
+          <tr data-cat-row="<%= c.id %>">
+            <td><b><%= c.name %></b></td>
+            <td><%= c.description || '—' %></td>
+            <td><%= c.products_count %></td>
+            <td><%= c.sort_order %></td>
+            <td><%- c.is_active ? '<span class="badge-active">مفعل</span>' : '<span class="badge-inactive">موقوف</span>' %></td>
+            <td style="white-space:nowrap">
+              <button class="btn btn-navy btn-sm" data-edit-cat="<%= c.id %>" data-name="<%= c.name %>" data-desc="<%= c.description %>" data-sort="<%= c.sort_order %>" data-active="<%= c.is_active %>">تعديل</button>
+              <button class="btn btn-red btn-sm" data-delete-cat="<%= c.id %>" data-name="<%= c.name %>">حذف</button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/foot') %>

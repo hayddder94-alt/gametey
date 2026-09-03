@@ -1,0 +1,26 @@
+rules:
+  - id: no-eval
+    patterns: [{ pattern: eval(...) }]
+    message: eval usage
+    languages: [javascript]
+    severity: ERROR
+  - id: no-child-process-user-input
+    patterns: [{ pattern-either: [{ pattern: execSync(..., { input: $X }) }, { pattern: spawn($CMD, [...$ARGS]) }] }]
+    message: command execution
+    languages: [javascript]
+    severity: WARNING
+  - id: sql-string-concat
+    patterns: [{ pattern-either: [{ pattern: $DB.prepare($Q + $X) }, { pattern: $DB.exec($Q + $X) }] }]
+    message: SQL built by concatenation
+    languages: [javascript]
+    severity: ERROR
+  - id: hardcoded-jwt-secret-assign
+    patterns: [{ pattern: jwtSecret = "..." }]
+    message: hardcoded secret
+    languages: [javascript]
+    severity: ERROR
+  - id: innerhtml-user-data
+    patterns: [{ pattern: $EL.innerHTML = $USERDATA }]
+    message: innerHTML assignment (review escaping/DOMPurify)
+    languages: [javascript]
+    severity: WARNING

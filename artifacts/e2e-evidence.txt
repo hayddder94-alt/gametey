@@ -1,0 +1,16 @@
+PASS E2E home 
+PASS E2E search 
+PASS E2E product page 
+PASS E2E quote 
+PASS E2E order created 
+PASS E2E confirmation summary 
+PASS E2E success page 
+PASS E2E admin login 
+PASS E2E dashboard 
+PASS E2E status update 
+PASS E2E PDF receipt 
+PASS PERF all < 200ms 
+PASS SEO home meta+robots+sitemap 
+PASS SEO product JSON-LD 
+FAIL SEC headers CSP+HSTS 
+TOTAL 15 FAILS: ['SEC headers CSP+HSTS']

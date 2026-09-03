@@ -1,0 +1,18 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main-content">
+<div class="container" style="padding:70px 16px;text-align:center">
+  <div style="font-size:3rem;color:var(--muted)"><%- icon('search', 'ic-xl') %></div>
+  <h1>الصفحة غير موجودة</h1>
+  <p class="text-muted">يبدو أن الرابط غير صحيح أو أن الصفحة نقلت.</p>
+  <form action="/products" method="get" style="max-width:340px;margin:0 auto 16px">
+    <input type="search" name="q" placeholder="ابحث عن منتج…" aria-label="بحث" style="width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px">
+  </form>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <a href="/" class="btn btn-navy">العودة إلى الرئيسية</a>
+    <a href="/products" class="btn btn-gold">كل المنتجات</a>
+    <a href="/products?offers=1" class="btn btn-outline">العروض</a>
+  </div>
+</div>
+</main>
+<%- include('partials/footer') %>

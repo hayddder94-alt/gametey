@@ -1,0 +1,237 @@
+<%- include('partials/head') %>
+<link rel="stylesheet" href="/js/vendor/swiper-bundle.min.css">
+<%- include('partials/header') %>
+<main id="main-content">
+<script type="application/ld+json">
+<%- jsonSafe({
+  "@context": "https://schema.org",
+  "@type": "HomeAndConstructionBusiness",
+  name: settings.COMPANY_NAME,
+  description: settings.COMPANY_SLOGAN,
+  address: { "@type": "PostalAddress", addressLocality: "النجف", addressCountry: "IQ", streetAddress: settings.COMPANY_ADDRESS },
+  telephone: settings.COMPANY_PHONE,
+  paymentAccepted: "Cash, Installments",
+  currenciesAccepted: "IQD"
+}) %>
+</script>
+
+<section class="hero">
+  <div class="hero-bg"><img src="/img/hero.jpg" alt="" fetchpriority="high" width="1600" height="900"></div>
+  <div class="container">
+    <div class="hero-content">
+      <span class="hero-badge"><%- icon('home') %> كل ما يحتاجه بيتك في مكان واحد</span>
+      <h1><%= settings.COMPANY_NAME %> — جهازك اليوم، ودفعتك على كيفك</h1>
+      <p><%= settings.COMPANY_SLOGAN %>. استلم منتجك فورًا وادفع نقدًا أو بالتقسيط المريح بدون تعقيد، مع توصيل لجميع المحافظات.</p>
+      <div class="hero-cta">
+        <a href="/products" class="btn btn-gold btn-lg">تصفح المنتجات</a>
+        <a href="/products" class="btn btn-white btn-lg">اطلب الآن</a>
+        <a href="https://wa.me/<%= settings.WHATSAPP_COMPANY_NUMBER %>" target="_blank" rel="noopener" class="btn btn-green btn-lg"><%- icon('whatsapp') %> تواصل عبر واتساب</a>
+      </div>
+      <div class="hero-trust">
+        <span><%- icon('check') %> دفع نقدي أو تقسيط</span>
+        <span><%- icon('shield') %> بدون كفيل في أغلب المنتجات</span>
+        <span><%- icon('truck') %> توصيل لجميع المحافظات</span>
+        <span><%- icon('award') %> ضمان حقيقي</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- التصنيفات -->
+<section class="section" id="categories">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">تسوق حسب التصنيف <small>كهربائيات، أثاث، وأدوات منزلية لكل البيت</small></h2>
+    </div>
+    <div class="cats-grid" data-aos="fade-up">
+      <% categories.forEach(function(c, i){ %>
+        <a class="cat-card" href="/products?category=<%= encodeURIComponent(c.slug) %>">
+          <span class="cat-icon">
+            <% if (c.image) { %><img src="<%= c.image %>" alt="<%= c.name %>" loading="lazy"><% } else { %><%= ['🧊','🍳','🧺','📺','🛋️','🍽️'][i % 6] %><% } %>
+          </span>
+          <span class="cat-name"><%= c.name %></span>
+          <span class="cat-count"><%= c.products_count %> منتج</span>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- الأكثر طلبًا -->
+<% if (featured.length) { %>
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">الأكثر طلبًا <small>المنتجات المفضلة لدى عملائنا</small></h2>
+      <a class="link-more" href="/products?sort=popular">عرض الكل ←</a>
+    </div>
+    <div class="products-grid">
+      <% featured.forEach(function(p){ %>
+        <%- include('partials/product-card', { product: p }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- الدفع نقداً أو بالتقسيط -->
+<section class="section">
+  <div class="container">
+    <div class="pay-section">
+      <h2 class="section-title" style="color:#fff">ادفع بالطريقة التي تناسبك</h2>
+      <p style="margin:0;color:#d5dee8">في <%= settings.COMPANY_NAME %> نوفر لك خياري دفع واضحين بدون مفاجآت:</p>
+      <div class="pay-grid">
+        <div class="pay-card">
+          <h3><%- icon('cash') %> الدفع النقدي</h3>
+          <ul>
+            <li>أفضل سعر للمنتج</li>
+            <li>خصومات نقدية على منتجات مختارة</li>
+            <li>استلام فوري من المعرض أو بالتوصيل</li>
+          </ul>
+        </div>
+        <div class="pay-card">
+          <h3><%- icon('card') %> الدفع بالتقسيط</h3>
+          <ul>
+            <li>دفعة أولى مناسبة</li>
+            <li>أقساط شهرية مريحة تصل إلى 6 أشهر وأكثر</li>
+            <li>بدون تعقيد وبشروط ميسرة</li>
+            <li>تعرف القسط الشهري قبل الطلب</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- العروض -->
+<% if (offers.length) { %>
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">العروض الحالية <small>خصومات حقيقية لفترة محدودة</small></h2>
+      <a class="link-more" href="/products?offers=1">كل العروض ←</a>
+    </div>
+    <div class="products-grid">
+      <% offers.forEach(function(p){ %>
+        <%- include('partials/product-card', { product: p }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- لماذا المؤمل -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">لماذا تختار <%= settings.COMPANY_NAME %>؟</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon"><%- icon('award', 'ic-lg') %></div>
+        <div><h3>ثقة وأمانة</h3><p>سمعة طيبة في النجف الأشرف وتعامل واضح بدون شروط مخفية.</p></div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><%- icon('card', 'ic-lg') %></div>
+        <div><h3>تقسيط مريح بدون تعقيد</h3><p>دفعة أولى بسيطة وأقساط شهرية تناسب دخلك، مع معرفة كل التفاصيل مسبقًا.</p></div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><%- icon('truck', 'ic-lg') %></div>
+        <div><h3>توصيل لجميع المحافظات</h3><p>نوصل طلبك إلى باب البيت في النجف وبقية المحافظات.</p></div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><%- icon('shield', 'ic-lg') %></div>
+        <div><h3>منتجات أصلية بضمان</h3><p>كهربائيات وأثاث أصلي من مصادر موثوقة مع ضمان حقيقي.</p></div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><%- icon('tag', 'ic-lg') %></div>
+        <div><h3>أسعار منافسة</h3><p>نقدم أفضل الأسعار في السوق مع عروض وخصومات مستمرة.</p></div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><%- icon('whatsapp', 'ic-lg') %></div>
+        <div><h3>اطلب بسهولة عبر واتساب</h3><p>اختر منتجاتك من المتجر وأرسل طلبك بضغطة واحدة إلى واتساب.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- معرض الصور -->
+<% const gallery = newest.filter(function(p){ return p.image; }).slice(0, 8); if (gallery.length) { %>
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">معرض المنتجات <small>لقطات من أحدث منتجاتنا</small></h2>
+    </div>
+    <div class="swiper home-swiper" dir="rtl">
+      <div class="swiper-wrapper gallery-strip" style="display:flex">
+      <% gallery.forEach(function(p){ %>
+        <div class="swiper-slide" style="width:auto"><a class="gallery-item" href="/product/<%= p.slug %>">
+          <img src="<%= p.image %>" alt="<%= p.name %>" loading="lazy">
+          <span><%= p.name %></span></a></div>
+      <% }) %>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+    <script src="/js/vendor/swiper-bundle.min.js"></script>
+    <script nonce="<%= cspNonce %>">
+      if (window.Swiper) {
+        new Swiper('.home-swiper', {
+          slidesPerView: 2.2,
+          spaceBetween: 10,
+          rtl: true,
+          pagination: { el: '.home-swiper .swiper-pagination', clickable: true },
+          breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 4.2 } },
+          autoplay: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? false : { delay: 3500, disableOnInteraction: true },
+        });
+      }
+    </script>
+  </div>
+</section>
+<% } %>
+
+<!-- أحدث المنتجات -->
+<% if (newest.length) { %>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">وصل حديثًا <small>أحدث المنتجات في المعرض</small></h2>
+      <a class="link-more" href="/products">عرض الكل ←</a>
+    </div>
+    <div class="products-grid">
+      <% newest.forEach(function(p){ %>
+        <%- include('partials/product-card', { product: p }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- التواصل -->
+<section class="section section-alt" id="contact">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">زورونا أو تواصلوا معنا <small>يسعدنا خدمتكم في أي وقت</small></h2>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="why-icon"><%- icon('pin', 'ic-lg') %></div>
+        <div><h3>العنوان</h3><p><%= settings.COMPANY_ADDRESS %></p></div>
+      </div>
+      <div class="contact-card">
+        <div class="why-icon"><%- icon('phone', 'ic-lg') %></div>
+        <div><h3>الهاتف</h3><a href="tel:<%= settings.COMPANY_PHONE %>" dir="ltr"><%= settings.COMPANY_PHONE %></a></div>
+      </div>
+      <div class="contact-card">
+        <div class="why-icon"><%- icon('whatsapp', 'ic-lg') %></div>
+        <div><h3>واتساب</h3><a href="https://wa.me/<%= settings.WHATSAPP_COMPANY_NUMBER %>" target="_blank" rel="noopener">اضغط للتواصل المباشر عبر واتساب</a></div>
+      </div>
+      <div class="contact-card">
+        <div class="why-icon"><%- icon('clock', 'ic-lg') %></div>
+        <div><h3>أوقات الدوام</h3><p>يوميًا من 9 صباحًا حتى 9 مساءً</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<%- include('partials/footer') %>

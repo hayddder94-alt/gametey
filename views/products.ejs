@@ -1,0 +1,66 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main id="main-content">
+<div class="page-head">
+  <div class="container">
+    <h1><%= q ? 'نتائج البحث' : (offersOnly ? 'العروض الحالية' : 'جميع المنتجات') %></h1>
+    <p>كهربائيات وأثاث ومنزلية — نقدًا أو بالتقسيط</p>
+  </div>
+</div>
+
+<div class="container" style="padding-top:6px">
+  <form class="filters-bar" method="get" action="/products" id="filtersForm">
+    <input type="search" name="q" value="<%= q %>" placeholder="🔍 ابحث عن منتج بالاسم..." aria-label="بحث">
+    <select name="category" aria-label="التصنيف">
+      <option value="">كل التصنيفات</option>
+      <% categories.forEach(function(c){ %>
+        <option value="<%= c.slug %>" <%= c.slug === category ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+    <select name="sort" aria-label="الترتيب">
+      <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>الأحدث</option>
+      <option value="popular" <%= sort === 'popular' ? 'selected' : '' %>>الأكثر طلبًا</option>
+      <option value="price_asc" <%= sort === 'price_asc' ? 'selected' : '' %>>السعر: من الأقل</option>
+      <option value="price_desc" <%= sort === 'price_desc' ? 'selected' : '' %>>السعر: من الأعلى</option>
+    </select>
+    <button type="submit" class="btn btn-navy">تطبيق</button>
+    <div class="filters-row" style="grid-column:1/-1">
+      <label class="check-label"><input type="checkbox" name="stock" value="1" <%= inStockOnly ? 'checked' : '' %>> المتوفر فقط</label>
+      <label class="check-label"><input type="checkbox" name="offers" value="1" <%= offersOnly ? 'checked' : '' %>> العروض والخصومات فقط</label>
+      <% if (q || category || inStockOnly || offersOnly || sort !== 'newest') { %>
+        <a href="/products" class="link-more"><%- icon('x') %> مسح الفلاتر</a>
+      <% } %>
+    </div>
+  </form>
+
+  <p class="results-meta"><%= total %> منتج <%= q ? 'لبحثك عن "' + q + '"' : '' %></p>
+
+  <% if (products.length) { %>
+    <div class="products-grid">
+      <% products.forEach(function(p){ %>
+        <%- include('partials/product-card', { product: p }) %>
+      <% }) %>
+    </div>
+
+    <% if (pages > 1) { %>
+      <div class="pagination">
+        <% for (let i = 1; i <= pages; i++) { %>
+          <% const qs = new URLSearchParams(); if (q) qs.set('q', q); if (category) qs.set('category', category); if (inStockOnly) qs.set('stock', '1'); if (offersOnly) qs.set('offers', '1'); if (sort !== 'newest') qs.set('sort', sort); qs.set('page', i); %>
+          <% if (i === page) { %><span class="current"><%= i %></span><% } else { %><a href="/products?<%= qs.toString() %>"><%= i %></a><% } %>
+        <% } %>
+      </div>
+    <% } %>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="big"><%- icon('search', 'ic-xl') %></div>
+      <h3>لا توجد منتجات مطابقة</h3>
+      <p>جرّب تغيير كلمات البحث أو الفلاتر.</p>
+      <a href="/products" class="btn btn-navy">عرض كل المنتجات</a>
+    </div>
+  <% } %>
+</div>
+
+<div style="height:40px"></div>
+</main>
+<%- include('partials/footer') %>

@@ -1,0 +1,105 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div style="display:grid;grid-template-columns:1fr;gap:18px">
+
+  <div class="panel">
+    <div class="panel-head">
+      <h3>طلب <span dir="ltr"><%= order.order_number %></span> — <span class="status-pill st-<%= order.status %>"><%= STATUS_AR[order.status] %></span></h3>
+      <span class="text-muted"><%= fmtDate(order.created_at) %></span>
+    </div>
+    <div style="padding:10px 18px;border-bottom:1px solid var(--line)">
+      <a class="btn btn-outline btn-sm" href="/admin/orders/<%= order.id %>/print" target="_blank" rel="noopener"><%- icon('printer') %> طباعة إيصال الطلب</a>
+      <a class="btn btn-outline btn-sm" href="/admin/orders/<%= order.id %>/pdf" target="_blank" rel="noopener"><%- icon('download') %> تنزيل إيصال PDF</a>
+    </div>
+    <div class="panel-body">
+      <div class="grid-2">
+        <div>
+          <h4 style="margin-bottom:8px">بيانات العميل</h4>
+          <p style="margin:4px 0"><b>الاسم:</b> <%= order.customer_name %></p>
+          <p style="margin:4px 0"><b>الهاتف:</b> <a href="tel:<%= order.customer_phone %>" dir="ltr"><%= order.customer_phone %></a></p>
+          <p style="margin:4px 0"><b>المحافظة:</b> <%= order.governorate || '—' %></p>
+          <p style="margin:4px 0"><b>المنطقة:</b> <%= order.area || '—' %></p>
+          <% if (order.landmark) { %><p style="margin:4px 0"><b>أقرب نقطة دالة:</b> <%= order.landmark %></p><% } %>
+          <% if (order.address) { %><p style="margin:4px 0"><b>العنوان:</b> <%= order.address %></p><% } %>
+          <% if (order.location_link) { %><p style="margin:4px 0"><b>الموقع:</b> <a href="<%= order.location_link %>" target="_blank" rel="noopener">فتح الخريطة</a></p><% } %>
+          <% if (order.notes) { %><p style="margin:4px 0"><b>ملاحظات العميل:</b> <%= order.notes %></p><% } %>
+        </div>
+        <div>
+          <h4 style="margin-bottom:8px">تغيير حالة الطلب</h4>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="statusSelect" style="padding:10px;border:1.5px solid var(--line);border-radius:8px;min-width:180px">
+              <% for (const s of ORDER_STATUSES) { %>
+                <option value="<%= s %>" <%= order.status === s ? 'selected' : '' %>><%= STATUS_AR[s] %></option>
+              <% } %>
+            </select>
+            <button class="btn btn-gold" id="saveStatusBtn" data-order-id="<%= order.id %>">حفظ الحالة</button>
+          </div>
+          <a class="btn btn-green btn-block mt-2" href="https://wa.me/964<%= order.customer_phone.replace(/^0/, '') %>?text=<%= encodeURIComponent('السلام عليكم ' + order.customer_name + '، بخصوص طلبك رقم ' + order.order_number + ' من ' + settings.COMPANY_NAME) %>" target="_blank" rel="noopener"><%- icon('whatsapp') %> التواصل مع العميل عبر واتساب</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>المنتجات المطلوبة</h3></div>
+    <div class="panel-body tight table-wrap">
+      <table class="data">
+        <thead><tr><th></th><th>المنتج</th><th>الكمية</th><th>الخيارات</th><th>الدفع</th><th>الإجمالي</th></tr></thead>
+        <tbody>
+          <% order.items.forEach(function(it){ const opts = safeJson(it.options_snapshot); %>
+            <tr>
+              <td><img class="cell-thumb" src="<%= it.product_image || '/img/placeholder.svg' %>" alt=""></td>
+              <td><b><%= it.product_name %></b></td>
+              <td><%= it.quantity %></td>
+              <td style="max-width:260px"><%= opts.length ? opts.map(function(o){ return o.option + ': ' + o.value + (o.price_delta ? ' (+' + formatIQD(o.price_delta) + ')' : ''); }).join(' • ') : 'بدون خيارات' %></td>
+              <td>
+                <% if (it.payment_method === 'CASH') { %><%- icon('cash') %> نقدي<% } else { %>
+                  <%- icon('card') %> تقسيط<br>
+                  <small class="text-muted">
+                    إجمالي <%= formatIQD(it.installment_total + it.fees_total) %><br>
+                    دفعة أولى <%= formatIQD(it.down_payment_total) %><br>
+                    <%= it.months %> أشهر × <%= formatIQD(it.monthly_total) %>
+                  </small>
+                <% } %>
+              </td>
+              <td><b><%= formatIQD(it.line_total) %></b></td>
+            </tr>
+          <% }) %>
+          <tr><td colspan="5" style="text-align:left"><b>إجمالي الطلب</b></td><td><b><%= formatIQD(order.grand_total) %></b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>ملاحظات داخلية (لا يراها العميل)</h3></div>
+    <div class="panel-body">
+      <textarea id="internalNotes" rows="3" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px"><%= order.internal_notes %></textarea>
+      <button class="btn btn-navy mt-1" id="saveNotesBtn" data-order-id="<%= order.id %>">حفظ الملاحظات</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>سجل تغييرات الحالة</h3></div>
+    <div class="panel-body tight table-wrap">
+      <table class="data">
+        <thead><tr><th>من</th><th>من حالة</th><th>إلى حالة</th><th>ملاحظة</th><th>الوقت</th></tr></thead>
+        <tbody>
+          <% order.history.forEach(function(h){ %>
+            <tr>
+              <td><%= h.username %></td>
+              <td><%= h.old_status ? (STATUS_AR[h.old_status] || h.old_status) : '—' %></td>
+              <td><span class="status-pill st-<%= h.new_status %>"><%= STATUS_AR[h.new_status] || h.new_status %></span></td>
+              <td><%= h.note || '' %></td>
+              <td><%= fmtDate(h.created_at) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<%- include('partials/foot') %>

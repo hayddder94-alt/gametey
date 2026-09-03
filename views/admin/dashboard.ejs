@@ -1,0 +1,109 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<p class="text-muted" style="margin-top:0">المبيعات تُحتسب من الطلبات بحالة: <%= stats.salesStatuses.map(function(s){ return STATUS_AR[s]; }).join(' + ') %> فقط.</p>
+
+<div class="stat-grid">
+  <div class="stat-card gold"><div class="num"><%= formatIQD(stats.totalSales) %></div><div class="lbl">إجمالي قيمة المبيعات</div></div>
+  <div class="stat-card green"><div class="num"><%= formatIQD(stats.todaySales) %></div><div class="lbl">مبيعات اليوم</div></div>
+  <div class="stat-card green"><div class="num"><%= formatIQD(stats.weekSales) %></div><div class="lbl">مبيعات الأسبوع</div></div>
+  <div class="stat-card green"><div class="num"><%= formatIQD(stats.monthSales) %></div><div class="lbl">مبيعات الشهر</div></div>
+  <div class="stat-card <%= stats.growth === null ? '' : (stats.growth >= 0 ? 'green' : 'red') %>">
+    <div class="num"><%= stats.growth === null ? '—' : (stats.growth > 0 ? '+' : '') + stats.growth + '%' %></div>
+    <div class="lbl">نسبة نمو المبيعات (30 يومًا)</div>
+  </div>
+  <div class="stat-card"><div class="num"><%= stats.totalOrders %></div><div class="lbl">عدد الطلبات</div></div>
+  <div class="stat-card"><div class="num" id="liveNewCount"><%= stats.orderCounts.NEW %></div><div class="lbl">طلبات جديدة</div></div>
+  <div class="stat-card red"><div class="num"><%= stats.orderCounts.CANCELLED %></div><div class="lbl">ملغاة</div></div>
+  <div class="stat-card red"><div class="num"><%= stats.overdueCount || 0 %></div><div class="lbl">أقساط متأخرة (<%= formatIQD(stats.overdueSum || 0) %>)</div></div>
+</div>
+<% if (stats.growth === null) { %>
+  <div class="alert alert-info">نسبة النمو: لا توجد بيانات كافية للمقارنة (لا مبيعات في الفترة السابقة).</div>
+<% } else { %>
+  <p class="text-muted" style="font-size:.8rem">نسبة نمو المبيعات = ((مبيعات آخر 30 يومًا − مبيعات الـ30 يومًا السابقة) ÷ مبيعات الـ30 يومًا السابقة) × 100</p>
+<% } %>
+
+<div class="stat-grid">
+  <div class="stat-card gold"><div class="num"><%= stats.orderCounts.PENDING_CONFIRMATION %></div><div class="lbl">بانتظار التأكيد</div></div>
+  <div class="stat-card"><div class="num"><%= stats.orderCounts.CONFIRMED %></div><div class="lbl">تم التأكيد</div></div>
+  <div class="stat-card"><div class="num"><%= stats.orderCounts.PROCESSING %></div><div class="lbl">قيد التنفيذ</div></div>
+  <div class="stat-card"><div class="num"><%= stats.orderCounts.READY %></div><div class="lbl">جاهز</div></div>
+  <div class="stat-card green"><div class="num"><%= stats.orderCounts.DELIVERED %></div><div class="lbl">تم التوصيل</div></div>
+  <div class="stat-card green"><div class="num"><%= stats.orderCounts.COMPLETED %></div><div class="lbl">مكتمل</div></div>
+  <div class="stat-card"><div class="num"><%= stats.productsCount %></div><div class="lbl">المنتجات</div></div>
+  <div class="stat-card red"><div class="num"><%= stats.outOfStock %></div><div class="lbl">غير متوفرة</div></div>
+</div>
+
+<div class="charts-grid">
+  <div class="panel">
+    <div class="panel-head"><h3>المبيعات حسب الأيام (آخر 14 يومًا)</h3></div>
+    <div class="panel-body"><canvas id="chartDaily" height="180"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>المبيعات حسب الأشهر</h3></div>
+    <div class="panel-body"><canvas id="chartMonthly" height="180"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>أكثر المنتجات مبيعًا</h3></div>
+    <div class="panel-body"><canvas id="chartTop" height="180"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>الطلبات المكتملة مقابل الملغاة</h3></div>
+    <div class="panel-body"><canvas id="chartSplit" height="180"></canvas></div>
+  </div>
+</div>
+
+<div class="panel mt-2">
+  <div class="panel-head"><h3>آخر الطلبات</h3><a href="/admin/orders" class="link-more">كل الطلبات ←</a></div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead><tr><th>الرقم</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th><th>التاريخ</th><th></th></tr></thead>
+      <tbody>
+        <% stats.latestOrders.forEach(function(o){ %>
+          <tr>
+            <td><b dir="ltr"><%= o.order_number %></b></td>
+            <td><%= o.customer_name %></td>
+            <td dir="ltr"><%= o.customer_phone %></td>
+            <td><%= formatIQD(o.grand_total) %></td>
+            <td><span class="status-pill st-<%= o.status %>"><%= STATUS_AR[o.status] || o.status %></span></td>
+            <td><%= fmtDate(o.created_at) %></td>
+            <td><a class="btn btn-navy btn-sm" href="/admin/orders/<%= o.id %>">فتح</a></td>
+          </tr>
+        <% }) %>
+        <% if (!stats.latestOrders.length) { %><tr><td colspan="7" class="text-center text-muted" style="padding:26px">لا توجد طلبات بعد.</td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>آخر تغييرات الأسعار</h3><a href="/admin/audit" class="link-more">السجل الكامل ←</a></div>
+  <div class="panel-body tight table-wrap">
+    <% if (stats.priceAudits.length) { %>
+      <table class="data">
+        <thead><tr><th>المستخدم</th><th>العملية</th><th>السعر السابق</th><th>السعر الجديد</th><th>التاريخ</th></tr></thead>
+        <tbody>
+          <% stats.priceAudits.forEach(function(a){
+            let ov = {}, nv = {};
+            try { ov = JSON.parse(a.old_value || '{}'); nv = JSON.parse(a.new_value || '{}'); } catch(e){}
+          %>
+            <tr>
+              <td><%= a.username %></td>
+              <td><%= a.action %><% if (nv.product) { %> — <%= nv.product %><% } %></td>
+              <td><%= ov.value !== undefined ? formatIQD(ov.value) : '—' %></td>
+              <td><%= nv.value !== undefined ? formatIQD(nv.value) : '—' %></td>
+              <td><%= fmtDate(a.created_at) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p class="text-muted" style="padding:16px;margin:0">لا توجد تغييرات أسعار بعد.</p>
+    <% } %>
+  </div>
+</div>
+
+<script nonce="<%= cspNonce %>">
+  window.DASH = <%- jsonSafe(dashJson) %>;
+</script>
+<%- include('partials/foot', { extraScripts: ['/js/vendor/chart.umd.js', '/js/admin/dashboard.js'] }) %>

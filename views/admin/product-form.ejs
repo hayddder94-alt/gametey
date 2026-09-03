@@ -1,0 +1,131 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<form id="productForm" class="panel" style="padding:20px" data-product-id="<%= product ? product.id : '' %>">
+  <div id="formAlert"></div>
+
+  <div class="form-section">
+    <h3>المعلومات الأساسية</h3>
+    <div class="field">
+      <label>اسم المنتج <span class="req">*</span></label>
+      <input type="text" name="name" value="<%= product ? product.name : '' %>" required maxlength="200">
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>التصنيف</label>
+        <select name="category_id">
+          <option value="">بدون تصنيف</option>
+          <% categories.forEach(function(c){ %>
+            <option value="<%= c.id %>" <%= product && product.category_id === c.id ? 'selected' : '' %>><%= c.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field">
+        <label>حالة التوفر</label>
+        <select name="stock_status">
+          <option value="IN_STOCK" <%= product && product.stock_status === 'IN_STOCK' ? 'selected' : '' %>>متوفر</option>
+          <option value="LOW_STOCK" <%= product && product.stock_status === 'LOW_STOCK' ? 'selected' : '' %>>كمية محدودة</option>
+          <option value="OUT_OF_STOCK" <%= product && product.stock_status === 'OUT_OF_STOCK' ? 'selected' : '' %>>غير متوفر</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>وصف مختصر (يظهر في بطاقة المنتج)</label>
+      <input type="text" name="short_description" value="<%= product ? product.short_description : '' %>" maxlength="500">
+    </div>
+    <div class="field">
+      <label>الوصف الكامل</label>
+      <textarea name="description" rows="4"><%= product ? product.description : '' %></textarea>
+    </div>
+    <div class="field">
+      <label>المواصفات (كل مواصفة في سطر)</label>
+      <textarea name="specs" rows="4" placeholder="مثال: السعة: 18 قدم&#10;نوع التبريد: لا تجميد"><%= product ? product.specs : '' %></textarea>
+    </div>
+    <div class="filters-row">
+      <label class="check-label"><input type="checkbox" name="is_featured" value="1" <%= product && product.is_featured ? 'checked' : '' %>> ضمن الأكثر طلبًا</label>
+      <label class="check-label"><input type="checkbox" name="on_offer" value="1" <%= product && product.on_offer ? 'checked' : '' %>> ضمن العروض</label>
+      <label class="check-label"><input type="checkbox" name="is_active" value="1" <%= !product || product.is_active ? 'checked' : '' %>> منتج مفعل (ظاهر في المتجر)</label>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>الأسعار والدفع</h3>
+    <div class="grid-3">
+      <div class="field">
+        <label>السعر النقدي (د.ع) <span class="req">*</span></label>
+        <input type="number" name="cash_price" min="0" step="250" value="<%= product ? product.cash_price : '' %>" required inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>الخصم النقدي (د.ع)</label>
+        <input type="number" name="discount_amount" min="0" step="250" value="<%= product ? product.discount_amount : 0 %>" inputmode="numeric">
+        <div class="hint">يُخصم من السعر النقدي فقط</div>
+      </div>
+      <div class="field">
+        <label>رسوم إضافية (د.ع)</label>
+        <input type="number" name="fees_amount" min="0" step="250" value="<%= product ? product.fees_amount : 0 %>" inputmode="numeric">
+      </div>
+    </div>
+    <div class="field" style="max-width:300px">
+      <label>اسم الرسوم (اختياري)</label>
+      <input type="text" name="fees_label" value="<%= product ? product.fees_label : '' %>" placeholder="مثال: أجور التوصيل">
+    </div>
+
+    <div class="filters-row mb-2">
+      <label class="check-label" style="font-size:1rem"><input type="checkbox" id="installmentToggle" name="installment_enabled" value="1" <%= product && product.installment_enabled ? 'checked' : '' %>> <%- icon('card') %> هذا المنتج متاح بالتقسيط</label>
+    </div>
+    <div id="installmentFields" style="<%= product && product.installment_enabled ? '' : 'display:none' %>">
+      <div class="grid-3">
+        <div class="field">
+          <label>السعر الإجمالي بالتقسيط (د.ع)</label>
+          <input type="number" name="installment_price" min="0" step="250" value="<%= product ? product.installment_price : 0 %>" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>الدفعة الأولى (د.ع)</label>
+          <input type="number" name="down_payment" min="0" step="250" value="<%= product ? product.down_payment : 0 %>" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>عدد الأقساط (أشهر)</label>
+          <input type="number" name="installment_months" min="0" max="60" value="<%= product ? product.installment_months : 6 %>" inputmode="numeric">
+        </div>
+      </div>
+      <div class="field" style="max-width:300px">
+        <label>القسط الشهري (د.ع)</label>
+        <input type="number" name="monthly_payment" min="0" step="250" value="<%= product ? product.monthly_payment : 0 %>" inputmode="numeric">
+        <div class="hint">اتركه صفرًا ليُحسب تلقائيًا: (السعر − الدفعة الأولى) ÷ عدد الأقساط</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>الخيارات الديناميكية <small class="text-muted" style="font-weight:400">(اللون، الحجم، الموديل...)</small></h3>
+    <div id="optionsBuilder"></div>
+    <button type="button" class="btn btn-outline btn-sm" id="addOptionBtn">＋ إضافة خيار جديد</button>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button type="submit" class="btn btn-gold btn-lg" id="saveBtn"><%= product ? 'حفظ التعديلات' : 'إضافة المنتج' %></button>
+    <a href="/admin/products" class="btn btn-ghost btn-lg">إلغاء</a>
+  </div>
+</form>
+
+<% if (product) { %>
+<div class="panel">
+  <div class="panel-head"><h3>صور المنتج</h3></div>
+  <div class="panel-body">
+    <div class="drop-zone mb-2" id="dropZone">
+      📷 اضغط أو اسحب الصور هنا للرفع (JPG / PNG / WEBP — حتى 6 ميجابايت، يمكن اختيار عدة صور)
+      <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+    </div>
+    <div id="imagesGrid" style="display:flex;gap:12px;flex-wrap:wrap"></div>
+  </div>
+</div>
+<script>
+  window.PRODUCT_IMAGES = <%- jsonSafe(images) %>;
+  window.PRODUCT_ID = <%= product.id %>;
+</script>
+<% } %>
+
+<script>
+  window.PRODUCT_OPTIONS = <%- jsonSafe(options || []) %>;
+</script>
+<%- include('partials/foot', { extraScripts: ['/js/admin/product-form.js'] }) %>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | <%= settings.COMPANY_NAME %></title>
+  <meta name="description" content="<%= settings.COMPANY_SLOGAN %> — <%= settings.COMPANY_ADDRESS %>">
+  <%# مشاركة اجتماعية (فيسبوك/واتساب) — بطاقات غنية عند مشاركة أي صفحة %>
+  <meta property="og:site_name" content="<%= settings.COMPANY_NAME %>">
+  <meta property="og:title" content="<%= (typeof ogTitle !== 'undefined' && ogTitle) ? ogTitle : title + ' | ' + settings.COMPANY_NAME %>">
+  <meta property="og:description" content="<%= (typeof ogDesc !== 'undefined' && ogDesc) ? ogDesc : settings.COMPANY_SLOGAN %>">
+  <meta property="og:type" content="<%= (typeof ogType !== 'undefined' && ogType) ? ogType : 'website' %>">
+  <meta property="og:image" content="<%= (typeof ogImage !== 'undefined' && ogImage) ? ogImage : '/img/hero.jpg' %>">
+  <meta property="og:locale" content="ar_IQ">
+  <link rel="canonical" href="<%= canonicalBase + currentPath %>">
+  <meta property="og:url" content="<%= canonicalBase + currentPath %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/img/logo.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0d2b45">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/js/vendor/aos.css">
+</head>
+<body>
+<script src="/js/main.js"></script>

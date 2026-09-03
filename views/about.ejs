@@ -1,0 +1,78 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main id="main-content">
+<div class="page-head">
+  <div class="container">
+    <h1>نبذة عن <%= settings.COMPANY_NAME %></h1>
+    <p><%= settings.COMPANY_SLOGAN %></p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="form-card" style="max-width:860px;margin:0 auto">
+      <h2 style="color:var(--navy)">من نحن</h2>
+      <p style="font-size:1.05rem;line-height:2">
+        <b><%= settings.COMPANY_NAME %></b> شركة تجارية عراقية مقرها النجف الأشرف — حي الكرامة،
+        متخصصة بتجهيز البيت العراقي بكل ما يحتاجه من <b>كهربائيات وأثاث ومنزلية</b>.
+        انطلقنا من قناعة بسيطة: كل عائلة تستحق بيتًا مكتملًا ومريحًا دون أن تثقلها الدفعات،
+        لذلك وفرنا خياري <b>الدفع النقدي</b> و<b>التقسيط المريح بدون تعقيد</b>،
+        مع منتجات أصلية وضمان حقيقي وخدمة توصيل تشمل جميع المحافظات.
+      </p>
+      <p style="font-size:1.05rem;line-height:2">
+        في معرضنا تجد الثلاجات والفريزرات وأجهزة التبريد، الغسالات والطباخات وكهربائيات المطبخ،
+        الشاشات الذكية، إضافة إلى الأثاث المنزلي من أطقم الكنب والأسرّة —
+        وكلها معروضة بأسعار واضحة تُعرفها قبل الطلب، نقدًا كان الدفع أم بالتقسيط.
+      </p>
+    </div>
+
+    <div class="why-grid mt-3">
+      <div class="why-card">
+        <div class="why-icon"><%- icon('target', 'ic-lg') %></div>
+        <div><h3>رسالتنا</h3><p>تجهيز كل بيت عراقي بأفضل الكهربائيات والأثاث بأسعار عادلة وخيارات دفع مرنة وخدمة لا تنتهي عند البيع.</p></div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><%- icon('award', 'ic-lg') %></div>
+        <div><h3>أمانتنا</h3><p>تعامل واضح بدون شروط مخفية: السعر والدفعة الأولى والقسط الشهري تعرفها كلها قبل أن تطلب.</p></div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><%- icon('shield', 'ic-lg') %></div>
+        <div><h3>ضماننا</h3><p>منتجات أصلية من مصادر موثوقة مع ضمان حقيقي ومتابعة بعد البيع عبر الهاتف وواتساب.</p></div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><%- icon('truck', 'ic-lg') %></div>
+        <div><h3>توصيلنا</h3><p>نوصل طلبك إلى باب البيت في النجف الأشرف وبقية المحافظات، وبسرعة.</p></div>
+      </div>
+    </div>
+
+    <div class="section-head mt-3">
+      <h2 class="section-title">أقسام معرضنا</h2>
+    </div>
+    <div class="cats-grid">
+      <% categories.forEach(function(c, i){ %>
+        <a class="cat-card" href="/products?category=<%= encodeURIComponent(c.slug) %>">
+          <span class="cat-icon">
+            <% if (c.image) { %><img src="<%= c.image %>" alt="<%= c.name %>" loading="lazy"><% } else { %><%= ['🧊','🍳','🧺','📺','🛋️','🍽️'][i % 6] %><% } %>
+          </span>
+          <span class="cat-name"><%= c.name %></span>
+          <span class="cat-count"><%= c.products_count %> منتج</span>
+        </a>
+      <% }) %>
+    </div>
+
+    <div class="pay-section mt-3" style="text-align:center">
+      <h2 style="color:#fff;margin-bottom:6px">جاهز تجهّز بيتك؟</h2>
+      <p style="color:#d5dee8;margin:0 0 20px">تصفح المنتجات واطلب خلال دقائق — وسنتواصل معك لتثبيت طلبك عبر واتساب.</p>
+      <div class="hero-cta" style="justify-content:center">
+        <a href="/products" class="btn btn-gold btn-lg">تصفح المنتجات</a>
+        <a href="https://wa.me/<%= settings.WHATSAPP_COMPANY_NUMBER %>" target="_blank" rel="noopener" class="btn btn-green btn-lg"><%- icon('whatsapp') %> تواصل عبر واتساب</a>
+        <a href="/contact" class="btn btn-white btn-lg">تواصل معنا</a>
+      </div>
+      <p style="color:#b9c6d4;margin:18px 0 0;font-size:.95rem">📍 <%= settings.COMPANY_ADDRESS %> — 📞 <span dir="ltr"><%= settings.COMPANY_PHONE %></span></p>
+    </div>
+  </div>
+</section>
+
+</main>
+<%- include('partials/footer') %>

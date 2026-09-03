@@ -1,0 +1,59 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main id="main-content">
+<div class="container">
+  <div class="success-hero">
+    <div class="success-icon"><%- icon('check', 'ic-lg') %></div>
+    <h1 style="margin-bottom:6px">تم إنشاء طلبك بنجاح!</h1>
+    <p class="text-muted" style="margin:0 0 14px">تم حفظ الطلب لدينا بالحالة: <b>طلب جديد</b></p>
+    <div class="order-num-box" id="orderNum"><%= orderNumber %></div>
+  </div>
+
+  <div class="form-card" style="max-width:640px;margin:0 auto">
+    <div id="orderSummary">
+      <div class="skeleton" style="height:80px;margin-bottom:10px"></div>
+      <div class="skeleton" style="height:80px"></div>
+    </div>
+
+    <div id="waStep" style="<%= waLink ? '' : 'display:none' %>">
+      <div class="alert alert-info" style="text-align:right" id="waCountdownBox">
+        <%- icon('whatsapp') %> سيتم تحويلك إلى واتساب على رقم الشركة <b>ومضمون طلبك الكامل داخل الرسالة</b> خلال
+        <b id="waCount">3</b> ثانية — اضغط «إرسال» داخل واتساب لتثبيت الطلب.
+        <br><small>طلبك محفوظ ويظهر لإدارة المتجر حتى لو لم تُرسل الرسالة.</small>
+      </div>
+      <a class="btn btn-green btn-lg btn-block" id="sendWhatsappLink"
+         href="<%= waLink || '#' %>" target="_top" rel="noopener"
+         <%= waLink ? '' : 'style="pointer-events:none;opacity:.6"' %>>
+        <%- icon('whatsapp') %> التحويل إلى واتساب الآن بمضمون الطلب
+      </a>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <a class="btn btn-outline btn-sm" style="flex:1" id="waNewTabLink" href="<%= waLink || '#' %>" target="_blank" rel="noopener"
+           <%= waLink ? '' : 'style="pointer-events:none;opacity:.6"' %>><%- icon('globe') %> فتح في تبويب جديد</a>
+        <button type="button" class="btn btn-ghost btn-sm" style="flex:1" id="waCancelBtn">البقاء في المتجر</button>
+      </div>
+      <div id="waDone" class="alert alert-success" style="display:none">
+        <%- icon('check') %> تم التحويل إلى واتساب بمضمون طلبك. اضغط «إرسال» داخل التطبيق ليصل إلى الشركة.
+      </div>
+      <% if (typeof qrSvg !== 'undefined' && qrSvg) { %>
+        <div class="text-center mt-2" style="padding:14px;background:var(--gold-soft);border-radius:12px">
+          <div style="display:inline-block;background:#fff;padding:10px;border-radius:10px"><%- qrSvg %></div>
+          <p class="hint" style="margin:8px 0 0">على جهاز آخر؟ امسح الرمز ليفتح واتساب بمضمون طلبك جاهزًا.</p>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="text-center mt-2">
+      <a href="/products" class="btn btn-ghost">مواصلة التسوق</a>
+    </div>
+  </div>
+</div>
+<div style="height:60px"></div>
+<script nonce="<%= cspNonce %>">
+  window.ORDER_INFO = <%- jsonSafe({ order_number: orderNumber }) %>;
+  window.WA_TOKEN = <%- jsonSafe(waToken) %>;
+</script>
+<script src="/js/vendor/dompurify.min.js"></script>
+<script src="/js/order-success.js"></script>
+</main>
+<%- include('partials/footer') %>

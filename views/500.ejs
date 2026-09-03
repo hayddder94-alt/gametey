@@ -1,0 +1,12 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main-content">
+<div class="container" style="padding:70px 16px;text-align:center">
+  <div style="font-size:3rem;color:var(--muted)"><%- icon('alert','ic-xl') %></div>
+  <h1>حدث خطأ غير متوقع</h1>
+  <p class="text-muted">نعمل على إصلاحه — حاول مجددًا بعد لحظات، أو تواصل معنا عبر واتساب.</p>
+  <a href="/" class="btn btn-navy">العودة للرئيسية</a>
+  <a href="https://wa.me/<%= settings.WHATSAPP_COMPANY_NUMBER %>" target="_blank" rel="noopener" class="btn btn-green"><%- icon('whatsapp') %> واتساب</a>
+</div>
+</main>
+<%- include('partials/footer') %>

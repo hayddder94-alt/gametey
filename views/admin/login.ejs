@@ -1,0 +1,51 @@
+<%- include('partials/head') %>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo"><img src="/img/logo.png" alt="<%= settings.COMPANY_NAME %>"></div>
+    <h1>لوحة إدارة <%= settings.COMPANY_NAME %></h1>
+    <p class="sub">هذه المنطقة مخصصة للحسابات الإدارية المصرح لها فقط</p>
+    <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+    <div id="loginError" class="alert alert-error" style="display:none"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginIdentifier">اسم المستخدم أو البريد الإلكتروني</label>
+        <input type="text" id="loginIdentifier" name="identifier" autocomplete="username" required dir="ltr">
+      </div>
+      <div class="field">
+        <label for="loginPassword">كلمة المرور</label>
+        <input type="password" id="loginPassword" name="password" autocomplete="current-password" required dir="ltr">
+      </div>
+      <button type="submit" class="btn btn-navy btn-block btn-lg" id="loginBtn">تسجيل الدخول</button>
+    </form>
+    <p class="sub mt-2" style="margin-bottom:0"><a href="/">← العودة إلى المتجر</a></p>
+  </div>
+</div>
+<script src="/js/main.js"></script>
+<script nonce="<%= cspNonce %>">
+(function () {
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    const errBox = document.getElementById('loginError');
+    errBox.style.display = 'none';
+    btn.disabled = true; btn.textContent = '⏳ جارٍ التحقق...';
+    const fd = new FormData(this);
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: fd.get('identifier'), password: fd.get('password') }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'تعذر تسجيل الدخول.');
+      window.location.href = <%- jsonSafe(typeof next !== 'undefined' ? next : '/admin') %>;
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = '';
+      btn.disabled = false; btn.textContent = 'تسجيل الدخول';
+    }
+  });
+})();
+</script>
+</body>
+</html>

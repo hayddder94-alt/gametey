@@ -1,0 +1,33 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div class="panel">
+  <div class="panel-head"><h3>قاعدة العملاء (<%= customers.length %>)</h3></div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead><tr><th>الاسم</th><th>الهاتف</th><th>المحافظة</th><th>المنطقة</th><th>عدد الطلبات</th><th>قيمة الطلبات</th><th>آخر تحديث</th><th></th></tr></thead>
+      <tbody>
+        <% customers.forEach(function(c){ %>
+          <tr>
+            <td><b><%= c.name %></b></td>
+            <td dir="ltr"><%= c.phone %></td>
+            <td><%= c.governorate || '—' %></td>
+            <td><%= c.area || '—' %></td>
+            <td><%= c.orders_count %></td>
+            <td><%= formatIQD(c.total_spent) %></td>
+            <td><%= fmtDate(c.updated_at) %></td>
+            <td>
+              <a class="btn btn-green btn-sm" href="https://wa.me/964<%= c.phone.replace(/^0/, '') %>" target="_blank" rel="noopener"><%- icon('whatsapp') %> واتساب</a>
+              <a class="btn btn-ghost btn-sm" href="/admin/orders?q=<%= encodeURIComponent(c.phone) %>">طلباته</a>
+            </td>
+          </tr>
+        <% }) %>
+        <% if (!customers.length) { %>
+          <tr><td colspan="8" class="text-center text-muted" style="padding:30px">لا يوجد عملاء بعد.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/foot') %>

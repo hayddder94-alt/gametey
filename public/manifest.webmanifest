@@ -1,0 +1,21 @@
+{
+  "name": "شركة المؤمل — كهربائيات وأثاث ومنزلية",
+  "short_name": "المؤمل",
+  "description": "كل ما يحتاجه بيتك من كهربائيات وأثاث ومنزلية — نقدًا أو بالتقسيط المريح. النجف الأشرف.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#f5f7fa",
+  "theme_color": "#0d2b45",
+  "icons": [
+    { "src": "/img/logo.png", "sizes": "256x256"
+    },
+    {
+      "src": "/img/logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "maskable, "type": "image/png", "purpose": "any" }
+  ]
+}

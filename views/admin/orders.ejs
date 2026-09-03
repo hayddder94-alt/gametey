@@ -1,0 +1,57 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>إدارة الطلبات (<%= total %>)</h3>
+  </div>
+  <div class="panel-body">
+    <form method="get" action="/admin/orders" class="filters-row">
+      <input type="search" name="q" value="<%= q %>" placeholder="بحث برقم الطلب أو اسم العميل أو هاتفه..." aria-label="بحث في الطلبات" style="flex:1;min-width:220px;padding:10px 14px;border:1.5px solid var(--line);border-radius:8px">
+      <select name="status" style="padding:10px;border:1.5px solid var(--line);border-radius:8px">
+        <option value="">كل الحالات</option>
+        <% for (const s of ORDER_STATUSES) { %>
+          <option value="<%= s %>" <%= status === s ? 'selected' : '' %>><%= STATUS_AR[s] %></option>
+        <% } %>
+      </select>
+      <button class="btn btn-navy">تصفية</button>
+      <% if (q || status) { %><a href="/admin/orders" class="btn btn-ghost btn-sm">مسح</a><% } %>
+    </form>
+  </div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>المحافظة</th><th>الإجمالي</th><th>الدفع</th><th>الحالة</th><th>التاريخ</th><th></th></tr></thead>
+      <tbody>
+        <% orders.forEach(function(o){ %>
+          <tr>
+            <td><b dir="ltr"><%= o.order_number %></b></td>
+            <td><%= o.customer_name %></td>
+            <td dir="ltr"><%= o.customer_phone %></td>
+            <td><%= o.governorate || '—' %></td>
+            <td><%= formatIQD(o.grand_total) %></td>
+            <td><%- o.payment_summary === 'CASH' ? icon('cash') + ' نقدي' : o.payment_summary === 'INSTALLMENT' ? icon('card') + ' تقسيط' : icon('cash') + ' ' + icon('card') + ' مختلط' %></td>
+            <td><span class="status-pill st-<%= o.status %>"><%= STATUS_AR[o.status] %></span></td>
+            <td><%= fmtDate(o.created_at) %></td>
+            <td style="white-space:nowrap"><a class="btn btn-navy btn-sm" href="/admin/orders/<%= o.id %>">فتح</a>
+              <a class="btn btn-green btn-sm" href="https://wa.me/964<%= o.customer_phone.replace(/^0/, '') %>?text=<%= encodeURIComponent('السلام عليكم ' + o.customer_name + '، بخصوص طلبك رقم ' + o.order_number) %>" target="_blank" rel="noopener" aria-label="واتساب العميل"><%- icon('whatsapp') %></a></td>
+          </tr>
+        <% }) %>
+        <% if (!orders.length) { %>
+          <tr><td colspan="9" class="text-center text-muted" style="padding:30px">لا توجد طلبات مطابقة.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<% if (pages > 1) { %>
+<div class="pagination">
+  <% for (let i = 1; i <= pages; i++) { %>
+    <% if (i === page) { %><span class="current"><%= i %></span><% } else { %>
+      <a href="/admin/orders?page=<%= i %><%= q ? '&q=' + encodeURIComponent(q) : '' %><%= status ? '&status=' + status : '' %>"><%= i %></a>
+    <% } %>
+  <% } %>
+</div>
+<% } %>
+
+<%- include('partials/foot') %>
