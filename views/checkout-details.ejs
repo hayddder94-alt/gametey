@@ -1,0 +1,109 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main id="main-content">
+<div class="page-head">
+  <div class="container"><h1>بيانات العميل</h1><p>لا تحتاج إلى إنشاء حساب — أدخل بياناتك للتوصيل والتواصل</p></div>
+</div>
+
+<div class="container">
+  <div class="steps">
+    <div class="step">1. السلة</div>
+    <div class="step">2. مراجعة الطلب</div>
+    <div class="step active">3. بياناتك</div>
+    <div class="step">4. إرسال عبر واتساب</div>
+  </div>
+
+  <div class="checkout-layout">
+    <div class="form-card">
+      <form id="customerForm" novalidate>
+        <div class="field" id="f-name">
+          <label>الاسم الكامل <span class="req">*</span></label>
+          <input type="text" name="name" autocomplete="name" placeholder="مثال: علي حسين محمد" maxlength="80">
+          <div class="field-error"></div>
+        </div>
+        <div class="field" id="f-phone">
+          <label>رقم الهاتف <span class="req">*</span></label>
+          <input type="tel" name="phone" dir="ltr" autocomplete="tel" placeholder="07XXXXXXXXX" maxlength="15" inputmode="tel">
+          <div class="field-error"></div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field" id="f-governorate">
+            <label>المحافظة <span class="req">*</span></label>
+            <select name="governorate" autocomplete="address-level1">
+              <option value="">اختر المحافظة...</option>
+              <% config.GOVERNORATES.forEach(function(g){ %><option value="<%= g %>"><%= g %></option><% }) %>
+            </select>
+            <div class="field-error"></div>
+          </div>
+          <div class="field" id="f-area">
+            <label>المنطقة <span class="req">*</span></label>
+            <input type="text" name="area" placeholder="مثال: حي الكرامة" maxlength="100" autocomplete="address-level2">
+            <div class="field-error"></div>
+          </div>
+        </div>
+        <div class="field" id="f-landmark">
+          <label>أقرب نقطة دالة</label>
+          <input type="text" name="landmark" placeholder="مثال: قرب جامع الإمام علي" maxlength="200">
+          <div class="field-error"></div>
+        </div>
+        <div class="field" id="f-address">
+          <label>العنوان التفصيلي (اختياري)</label>
+          <textarea name="address" rows="2" autocomplete="street-address" placeholder="الشارع، رقم الدار، أي تفاصيل إضافية" maxlength="500"></textarea>
+          <div class="field-error"></div>
+        </div>
+        <div class="field" id="f-location">
+          <label>الموقع على الخريطة (اختياري)</label>
+          <div id="orderMap" style="height:220px;border-radius:10px;border:1.5px solid var(--line);margin-bottom:8px;z-index:0"></div>
+          <p class="hint">انقر على الخريطة لوضع علامة موقعك، أو استخدم زر تحديد موقعي.</p>
+          <button type="button" class="btn btn-outline btn-sm" id="locateBtn"><%- icon('pin') %> تحديد موقعي الحالي</button>
+          <input type="hidden" name="location_link" id="locationLink">
+          <div class="hint" id="locationHint"></div>
+          <div class="field-error"></div>
+        </div>
+        <fieldset id="installmentEligibility" style="display:none;border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px">
+          <legend style="font-weight:800;padding:0 8px">📒 ملف التقسيط (آلية الدفتر)</legend>
+          <p class="hint">وفق آلية الشركة: موظف، أو بكفيل موظف من (الرافدين / الأهلي العراقي / TPI)، ويُسلَّم كتاب الاستمرارية في المعرض لتفعيل الدفتر.</p>
+          <div class="form-grid-2">
+            <div class="field"><label>الصفة</label>
+              <select name="employment_type">
+                <option value="EMPLOYEE">موظف</option>
+                <option value="GUARANTOR">بكفيل موظف</option>
+              </select>
+            </div>
+            <div class="field"><label>المصرف</label>
+              <select name="bank">
+                <option value="">— اختر لاحقًا في المعرض —</option>
+                <option value="RAFIDAIN">مصرف الرافدين</option>
+                <option value="AHLI">الأهلي العراقي</option>
+                <option value="TPI">TPI</option>
+              </select>
+            </div>
+            <div class="field"><label>جهة العمل / الدائرة</label><input type="text" name="employer" maxlength="120" placeholder="مثال: مديرية التربية"></div>
+            <div class="field"><label>اسم الكفيل (إن وجد)</label><input type="text" name="guarantor_name" maxlength="80"></div>
+          </div>
+        </fieldset>
+        <div class="field" id="f-notes">
+          <label>ملاحظات إضافية</label>
+          <textarea name="notes" rows="3" placeholder="أي طلب خاص حول الطلب أو التوصيل..." maxlength="1000"></textarea>
+          <div class="field-error"></div>
+        </div>
+        <button type="submit" class="btn btn-green btn-lg btn-block" id="submitOrderBtn"><%- icon('whatsapp') %> إنشاء الطلب وإتمامه عبر واتساب</button>
+        <p class="hint text-center mt-1">يُحفظ طلبك أولًا في أنظمتنا، ثم نُحوّلك فورًا وبشكل سلس إلى واتساب الشركة لتثبيته.</p>
+      </form>
+    </div>
+
+    <div class="cart-summary" id="miniSummary" style="display:none">
+      <h3 style="margin-top:0">طلبك</h3>
+      <div id="miniRows"></div>
+      <div class="sum-row total"><span>الإجمالي</span><span id="grandTotal">—</span></div>
+    </div>
+  </div>
+</div>
+<div style="height:50px"></div>
+<script src="/js/vendor/dompurify.min.js"></script>
+<script src="/js/vendor/leaflet/leaflet.js"></script>
+<script src="/js/vendor/cleave.min.js"></script>
+<script src="/js/checkout.js" data-mode="details"></script>
+</main>
+<%- include('partials/footer') %>

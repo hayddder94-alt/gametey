@@ -1,0 +1,64 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<form id="settingsForm" class="panel" style="padding:20px;max-width:700px">
+  <h3 style="margin-top:0">بيانات الشركة</h3>
+  <div class="field">
+    <label>اسم الشركة</label>
+    <input type="text" name="COMPANY_NAME" value="<%= s.COMPANY_NAME %>" required>
+  </div>
+  <div class="field">
+    <label>الشعار النصي</label>
+    <input type="text" name="COMPANY_SLOGAN" value="<%= s.COMPANY_SLOGAN %>">
+  </div>
+  <div class="grid-2">
+    <div class="field">
+      <label>رقم الهاتف</label>
+      <input type="tel" name="COMPANY_PHONE" value="<%= s.COMPANY_PHONE %>" dir="ltr">
+    </div>
+    <div class="field">
+      <label>رقم واتساب (بالصيغة الدولية بدون +)</label>
+      <input type="tel" name="WHATSAPP_COMPANY_NUMBER" value="<%= s.WHATSAPP_COMPANY_NUMBER %>" dir="ltr">
+    </div>
+  </div>
+  <div class="field">
+    <label>عنوان الشركة</label>
+    <input type="text" name="COMPANY_ADDRESS" value="<%= s.COMPANY_ADDRESS %>">
+  </div>
+
+  <h3 style="margin-top:26px">إشعار تلقائي للشركة (تيليجرام)</h3>
+  <p class="hint">اختياري: عند تفعيله يصلك إشعار فوري من الخادم على تيليجرام مع كل طلب جديد — حتى لو لم يُرسل العميل رسالة واتساب.
+  أنشئ بوتًا عبر BotFather وانسخ التوكن، ثم ضع Chat ID الخاص بك.</p>
+  <div class="grid-2">
+    <div class="field">
+      <label>Telegram Bot Token</label>
+      <input type="text" name="TELEGRAM_BOT_TOKEN" value="<%= s.TELEGRAM_BOT_TOKEN %>" dir="ltr" placeholder="123456:ABC-...">
+    </div>
+    <div class="field">
+      <label>Chat ID</label>
+      <input type="text" name="TELEGRAM_CHAT_ID" value="<%= s.TELEGRAM_CHAT_ID %>" dir="ltr" placeholder="123456789">
+    </div>
+  </div>
+
+  <h3 style="margin-top:26px">احتساب المبيعات</h3>
+  <div class="field">
+    <label class="check-label" style="font-size:.95rem">
+      <input type="checkbox" name="SALES_INCLUDE_DELIVERED" value="1" <%= s.SALES_INCLUDE_DELIVERED === '1' ? 'checked' : '' %>>
+      احتساب الطلبات «تم التوصيل» ضمن المبيعات النهائية مع «مكتمل»
+    </label>
+    <div class="hint">إذا أُلغي التحديد تُحتسب الطلبات المكتملة فقط في إجمالي المبيعات والرسوم البيانية.</div>
+  </div>
+
+  <div class="field">
+    <label>إصدار النظام</label>
+    <input type="text" value="<%= appVersion %>" disabled dir="ltr">
+  </div>
+  <div class="field">
+    <label>الحد الأقصى للحسابات الإدارية (ثابت)</label>
+    <input type="text" value="<%= s.MAX_ADMIN_USERS || 3 %> حسابات — لا يمكن تغييره" disabled>
+  </div>
+
+  <button class="btn btn-gold btn-lg" type="submit">حفظ الإعدادات</button>
+</form>
+
+<%- include('partials/foot') %>

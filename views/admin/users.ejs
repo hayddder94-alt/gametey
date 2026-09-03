@@ -1,0 +1,38 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div class="alert alert-info">
+  نظام الإدارة ثابت عند <b><%= MAX_ADMIN_USERS %> حسابات</b> تابعة لشركة <%= settings.COMPANY_NAME %> —
+  جميعها بدور <b>ADMIN</b> بنفس الصلاحيات الكاملة. لا يمكن إنشاء حساب رابع (مفروض في Backend وقاعدة البيانات)،
+  ولا يمكن تعطيل آخر حساب نشط.
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>الحسابات الإدارية (<%= users.length %> / <%= MAX_ADMIN_USERS %>)</h3></div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead><tr><th>المستخدم</th><th>البريد</th><th>الدور</th><th>الحالة</th><th>آخر دخول</th><th>إجراءات</th></tr></thead>
+      <tbody>
+        <% users.forEach(function(u){ %>
+          <tr>
+            <td><b><%= u.username %></b><br><small class="text-muted"><%= u.full_name %></small></td>
+            <td dir="ltr"><%= u.email %></td>
+            <td><span class="role-chip">ADMIN</span></td>
+            <td><%- u.is_active ? '<span class="badge-active">مفعل</span>' : '<span class="badge-inactive">معطل</span>' %></td>
+            <td><%= u.last_login_at ? fmtDate(u.last_login_at) : 'لم يسجل الدخول بعد' %></td>
+            <td style="white-space:nowrap">
+              <button class="btn btn-navy btn-sm" data-edit-user="<%= u.id %>" data-username="<%= u.username %>" data-email="<%= u.email %>" data-name="<%= u.full_name %>">تعديل البيانات</button>
+              <button class="btn btn-gold btn-sm" data-reset-pass="<%= u.id %>" data-name="<%= u.username %>">تغيير كلمة المرور</button>
+              <button class="btn <%= u.is_active ? 'btn-red' : 'btn-green' %> btn-sm" data-toggle-user="<%= u.id %>" data-name="<%= u.username %>" data-active="<%= u.is_active %>">
+                <%= u.is_active ? 'تعطيل' : 'تفعيل' %>
+              </button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="/js/admin/users-edit.js"></script>
+<%- include('partials/foot') %>

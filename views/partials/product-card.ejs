@@ -1,0 +1,33 @@
+<% const p = product;
+   const netCash = p.cash_price - p.discount_amount;
+   const monthly = monthlyOf(p);
+%>
+<article class="p-card">
+  <a class="p-card-img" href="/product/<%= p.slug %>">
+    <% if (p.discount_amount > 0) { %><span class="p-badge">خصم <%= formatIQD(p.discount_amount) %></span><% } %>
+    <% if (p.is_featured && p.discount_amount === 0) { %><span class="p-badge gold">الأكثر طلبًا</span><% } %>
+    <% if (p.stock_status === 'OUT_OF_STOCK') { %><span class="p-badge gray">نفد المخزون</span><% } %>
+    <img src="<%= p.image || '/img/placeholder.svg' %>" alt="<%= p.name %>" loading="lazy" decoding="async" width="400" height="300">
+  </a>
+  <div class="p-card-body">
+    <% if (p.category_name) { %><span class="p-card-cat"><%= p.category_name %></span><% } %>
+    <h3 class="p-card-name"><a href="/product/<%= p.slug %>"><%= p.name %></a></h3>
+    <p class="p-card-desc"><%= p.short_description %></p>
+    <div class="p-price-row">
+      <span class="p-price"><%= formatIQD(netCash) %></span>
+      <% if (p.discount_amount > 0) { %><span class="p-price-old"><%= formatIQD(p.cash_price) %></span><% } %>
+    </div>
+    <% if (p.installment_enabled) { %>
+      <div class="p-installment-note"><%- icon('card') %> بالتقسيط: <%= formatIQD(monthly) %> / شهر</div>
+    <% } %>
+    <span class="p-stock <%= p.stock_status === 'IN_STOCK' ? 'in' : p.stock_status === 'LOW_STOCK' ? 'low' : 'out' %>">
+      <%- p.stock_status === 'IN_STOCK' ? icon('check') + ' متوفر' : p.stock_status === 'LOW_STOCK' ? icon('alert') + ' كمية محدودة' : icon('x') + ' غير متوفر' %>
+    </span>
+    <div class="p-card-actions">
+      <a class="btn btn-navy btn-sm" href="/product/<%= p.slug %>">عرض التفاصيل</a>
+      <% if (p.stock_status !== 'OUT_OF_STOCK') { %>
+        <button type="button" class="btn btn-gold btn-sm" data-quick-add="<%= p.id %>" data-has-options="<%= p.has_required_options ? '1' : '0' %>" data-slug="<%= p.slug %>">أضف للسلة</button>
+      <% } %>
+    </div>
+  </div>
+</article>

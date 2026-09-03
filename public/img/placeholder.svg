@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#eef2f7"/>
+  <g fill="none" stroke="#b9c6d4" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M400 210 L300 290 L310 430 L490 430 L500 290 Z"/>
+    <path d="M320 280 L400 218 L480 280"/>
+    <rect x="365" y="340" width="70" height="90" rx="6"/>
+  </g>
+  <text x="400" y="500" font-family="Tahoma,Arial" font-size="30" fill="#8fa1b3" text-anchor="middle">شركة المؤمل</text>
+</svg>

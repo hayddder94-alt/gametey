@@ -1,0 +1,69 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>دفتر <%= f.file_no || '#' + f.id %> — <%= f.customer_name %></h3>
+    <div style="display:flex;gap:8px">
+      <a class="btn btn-outline btn-sm" href="/admin/files/<%= f.id %>/print" target="_blank" rel="noopener"><%- icon('printer') %> طباعة الدفتر</a>
+      <a class="btn btn-ghost btn-sm" href="/admin/orders">الطلبات</a>
+    </div>
+  </div>
+  <div class="panel-body">
+    <form id="fileForm" class="grid-2">
+      <div class="field"><label>الصفة</label>
+        <select name="employment_type">
+          <option value="EMPLOYEE" <%= f.employment_type === 'EMPLOYEE' ? 'selected' : '' %>>موظف</option>
+          <option value="GUARANTOR" <%= f.employment_type === 'GUARANTOR' ? 'selected' : '' %>>بكفيل موظف</option>
+        </select>
+      </div>
+      <div class="field"><label>المصرف</label>
+        <select name="bank">
+          <option value="">—</option>
+          <option value="RAFIDAIN" <%= f.bank === 'RAFIDAIN' ? 'selected' : '' %>>مصرف الرافدين</option>
+          <option value="AHLI" <%= f.bank === 'AHLI' ? 'selected' : '' %>>الأهلي العراقي</option>
+          <option value="TPI" <%= f.bank === 'TPI' ? 'selected' : '' %>>TPI</option>
+        </select>
+      </div>
+      <div class="field"><label>اسم الموظف</label><input name="employee_name" value="<%= f.employee_name %>"></div>
+      <div class="field"><label>جهة العمل / الدائرة</label><input name="employer" value="<%= f.employer %>"></div>
+      <div class="field"><label>اسم الكفيل (إن وجد)</label><input name="guarantor_name" value="<%= f.guarantor_name %>"></div>
+      <div class="field"><label>رقم/تاريخ كتاب الاستمرارية</label><input name="letter_ref" value="<%= f.letter_ref %>"></div>
+      <div class="field"><label>كتاب الاستمرارية</label>
+        <select name="letter_status">
+          <option value="PENDING" <%= f.letter_status === 'PENDING' ? 'selected' : '' %>>بانتظار التسليم</option>
+          <option value="RECEIVED" <%= f.letter_status === 'RECEIVED' ? 'selected' : '' %>>مستلم — تفعيل الدفتر</option>
+        </select>
+      </div>
+      <div class="field" style="align-self:end"><button class="btn btn-gold">حفظ وتطبيق الحالة</button></div>
+    </form>
+    <div id="fileMsg"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>جدول التسديد الشهري</h3></div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead><tr><th>#</th><th>الاستحقاق</th><th>المبلغ</th><th>التسديد</th><th>سُجل بواسطة</th><th></th></tr></thead>
+      <tbody>
+        <% payments.forEach(function(p){ %>
+          <tr>
+            <td><%= p.installment_no %></td>
+            <td><%= p.due_date %></td>
+            <td><%= formatIQD(p.amount) %></td>
+            <td><%- p.paid_at ? '<span class="badge-active">' + p.paid_at + ' — ' + formatIQD(p.paid_amount) + '</span>' : '<span class="status-pill st-READY">غير مسدد</span>' %></td>
+            <td><%= p.recorded_by || '—' %></td>
+            <td><% if (!p.paid_at) { %><button class="btn btn-green btn-sm" data-pay="<%= p.id %>" data-amount="<%= p.amount %>">تسجيل تسديد</button><% } %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  window.FILE_ID = <%= f.id %>;
+</script>
+<script src="/js/admin/files.js"></script>
+<%- include('partials/foot') %>

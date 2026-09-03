@@ -1,0 +1,53 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>إدارة المنتجات (<%= products.length %>)</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <form method="get" action="/admin/products" style="display:flex;gap:8px">
+        <input type="search" name="q" value="<%= q %>" placeholder="بحث بالاسم..." aria-label="بحث بالاسم" style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px">
+        <button class="btn btn-ghost btn-sm">بحث</button>
+      </form>
+      <a class="btn btn-gold btn-sm" href="/admin/products/new">＋ إضافة منتج</a>
+    </div>
+  </div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th></th><th>المنتج</th><th>التصنيف</th><th>السعر النقدي</th><th>التقسيط</th><th>التوفر</th><th>الحالة</th><th>إجراءات</th></tr>
+      </thead>
+      <tbody>
+        <% products.forEach(function(p){ %>
+          <tr>
+            <td><img class="cell-thumb" src="<%= p.image || '/img/placeholder.svg' %>" alt=""></td>
+            <td><b><%= p.name %></b><br><small class="text-muted">طلبات: <%= p.orders_count %> — مشاهدات: <%= p.views %></small></td>
+            <td><%= p.category_name || '—' %></td>
+            <td><%= formatIQD(p.cash_price) %><% if (p.discount_amount) { %><br><small style="color:var(--green-2)">خصم <%= formatIQD(p.discount_amount) %></small><% } %></td>
+            <td>
+              <% if (p.installment_enabled) { %>
+                <%= formatIQD(p.installment_price) %><br>
+                <small class="text-muted"><%= p.installment_months %> أشهر × <%= formatIQD(monthlyOf(p)) %></small>
+              <% } else { %>—<% } %>
+            </td>
+            <td>
+              <% if (p.stock_status === 'IN_STOCK') { %><span class="badge-active">متوفر</span>
+              <% } else if (p.stock_status === 'LOW_STOCK') { %><span class="status-pill st-READY">كمية محدودة</span>
+              <% } else { %><span class="badge-inactive">غير متوفر</span><% } %>
+            </td>
+            <td><%- p.is_active ? '<span class="badge-active">مفعل</span>' : '<span class="badge-inactive">موقوف</span>' %></td>
+            <td style="white-space:nowrap">
+              <a class="btn btn-navy btn-sm" href="/admin/products/<%= p.id %>/edit">تعديل</a>
+              <button class="btn btn-red btn-sm" aria-label="حذف المنتج" data-delete-product="<%= p.id %>" data-name="<%= p.name %>">حذف</button>
+            </td>
+          </tr>
+        <% }) %>
+        <% if (!products.length) { %>
+          <tr><td colspan="8" class="text-center text-muted" style="padding:30px">لا توجد منتجات. ابدأ بإضافة منتج جديد.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/foot') %>

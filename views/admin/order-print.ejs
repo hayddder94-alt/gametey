@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إيصال طلب <%= order.order_number %> | <%= settings.COMPANY_NAME %></title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Tajawal', Tahoma, Arial, sans-serif; color: #17233a; margin: 0; padding: 28px; line-height: 1.7; }
+    .sheet { max-width: 800px; margin: 0 auto; border: 2px solid #0d2b45; border-radius: 10px; padding: 26px 30px; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #e0a526; padding-bottom: 14px; margin-bottom: 18px; }
+    header h1 { margin: 0; font-size: 1.35rem; color: #0d2b45; }
+    header .meta { font-size: .85rem; color: #5b6b7c; text-align: left; }
+    h2 { font-size: 1.05rem; color: #0d2b45; margin: 18px 0 8px; border-inline-start: 4px solid #e0a526; padding-inline-start: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; margin-top: 6px; }
+    th, td { border: 1px solid #c9d4e0; padding: 7px 10px; text-align: right; }
+    th { background: #eef2f7; }
+    .totals { margin-top: 12px; font-size: .95rem; }
+    .totals .row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .totals .grand { border-top: 2px solid #0d2b45; margin-top: 6px; padding-top: 8px; font-size: 1.15rem; font-weight: 800; }
+    .sign { display: flex; justify-content: space-between; margin-top: 46px; font-size: .9rem; }
+    .sign div { border-top: 1px dashed #5b6b7c; width: 200px; text-align: center; padding-top: 6px; }
+    .no-print { text-align: center; margin: 16px 0 0; }
+    .no-print button { font-family: inherit; background: #0d2b45; color: #fff; border: none; padding: 10px 26px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .muted { color: #5b6b7c; font-size: .85rem; }
+    @media print { .no-print { display: none; } body { padding: 0; } .sheet { border-width: 1.5px; } }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header>
+      <div>
+        <h1><%= settings.COMPANY_NAME %></h1>
+        <div class="muted"><%= settings.COMPANY_ADDRESS %><br>هاتف/واتساب: <span dir="ltr"><%= settings.COMPANY_PHONE %></span></div>
+      </div>
+      <div class="meta">
+        <b>إيصال طلب</b><br>
+        رقم: <span dir="ltr"><%= order.order_number %></span><br>
+        التاريخ: <%= fmtDate(order.created_at) %>
+      </div>
+    </header>
+
+    <h2>بيانات العميل</h2>
+    <table>
+      <tr><th>الاسم</th><td><%= order.customer_name %></td><th>الهاتف</th><td dir="ltr"><%= order.customer_phone %></td></tr>
+      <tr><th>المحافظة</th><td><%= order.governorate || '—' %></td><th>المنطقة</th><td><%= order.area || '—' %></td></tr>
+      <% if (order.landmark || order.address) { %>
+      <tr><th>نقطة دالة</th><td><%= order.landmark || '—' %></td><th>العنوان</th><td><%= order.address || '—' %></td></tr>
+      <% } %>
+    </table>
+
+    <h2>تفاصيل الطلب</h2>
+    <table>
+      <thead><tr><th>المنتج</th><th>الكمية</th><th>الخيارات</th><th>طريقة الدفع</th><th>الإجمالي</th></tr></thead>
+      <tbody>
+        <% order.items.forEach(function(it){ const opts = safeJson(it.options_snapshot); %>
+          <tr>
+            <td><%= it.product_name %></td>
+            <td><%= it.quantity %></td>
+            <td><%= opts.length ? opts.map(function(o){ return o.option + ': ' + o.value; }).join('، ') : '—' %></td>
+            <td>
+              <% if (it.payment_method === 'CASH') { %>نقدًا<% } else { %>
+                تقسيط<br>
+                <span class="muted">
+                  دفعة أولى: <%= formatIQD(it.down_payment_total) %><br>
+                  <%= it.months %> أشهر × <%= formatIQD(it.monthly_total) %>
+                </span>
+              <% } %>
+            </td>
+            <td><%= formatIQD(it.line_total) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <div class="row grand"><span>الإجمالي النهائي</span><span><%= formatIQD(order.grand_total) %></span></div>
+      <% if (order.notes) { %><p class="muted" style="margin-top:10px">ملاحظات العميل: <%= order.notes %></p><% } %>
+    </div>
+
+    <div class="sign">
+      <div>توقيع المستلم</div>
+      <div>توقيع مسؤول الشركة</div>
+    </div>
+  </div>
+
+  <p class="no-print"><button id="printBtn"><%- icon('printer') %> طباعة الإيصال</button></p>
+<script nonce="<%= cspNonce %>">document.getElementById('printBtn').addEventListener('click', function () { window.print(); });</script>
+</body>
+</html>

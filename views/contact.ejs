@@ -1,0 +1,39 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main id="main-content">
+<div class="page-head">
+  <div class="container"><h1>اتصل بنا</h1><p>نسعد بتواصلك معنا في أي وقت</p></div>
+</div>
+
+<div class="container section">
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="why-icon"><%- icon('pin', 'ic-lg') %></div>
+      <div><h3>عنوان الشركة</h3><p><%= settings.COMPANY_ADDRESS %></p></div>
+    </div>
+    <div class="contact-card">
+      <div class="why-icon"><%- icon('phone', 'ic-lg') %></div>
+      <div><h3>الهاتف</h3><a href="tel:<%= settings.COMPANY_PHONE %>" dir="ltr"><%= settings.COMPANY_PHONE %></a></div>
+    </div>
+    <div class="contact-card">
+      <div class="why-icon"><%- icon('whatsapp', 'ic-lg') %></div>
+      <div><h3>واتساب</h3><a href="https://wa.me/<%= settings.WHATSAPP_COMPANY_NUMBER %>" target="_blank" rel="noopener">تواصل مباشرة عبر واتساب</a></div>
+    </div>
+    <div class="contact-card">
+      <div class="why-icon"><%- icon('clock', 'ic-lg') %></div>
+      <div><h3>أوقات الدوام</h3><p>يوميًا من 9 صباحًا حتى 9 مساءً</p></div>
+    </div>
+  </div>
+
+  <div class="form-card mt-3" style="max-width:560px;margin-inline:auto">
+    <h3 style="margin-top:0">أرسل استفسارك عبر واتساب</h3>
+    <div class="field">
+      <textarea id="inquiryText" rows="4" placeholder="اكتب استفسارك هنا وسيفتح واتساب برسالتك الجاهزة..."></textarea>
+    </div>
+    <button type="button" class="btn btn-green btn-block" id="inquiryBtn"><%- icon('whatsapp') %> إرسال عبر واتساب</button>
+  </div>
+</div>
+<script src="/js/contact.js"></script>
+</main>
+<%- include('partials/footer') %>

@@ -1,0 +1,31 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div class="panel">
+  <div class="panel-head"><h3>دفاتر التقسيط (<%= files.length %>)</h3>
+    <span class="text-muted">نسخة رقمية من دفتر الشركة: تُفعَّل بعد استلام كتاب الاستمرارية</span>
+  </div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead><tr><th>الدفتر</th><th>الزبون</th><th>الطلب</th><th>الصفة/المصرف</th><th>الكتاب</th><th>الحالة</th><th>المسدد/المستحق</th><th></th></tr></thead>
+      <tbody>
+        <% const BANK_AR = { RAFIDAIN: 'الرافدين', AHLI: 'الأهلي العراقي', TPI: 'TPI' }; %>
+        <% files.forEach(function(f){ %>
+          <tr>
+            <td><b><%= f.file_no || '—' %></b></td>
+            <td><%= f.customer_name %><br><small dir="ltr"><%= f.customer_phone %></small></td>
+            <td dir="ltr"><%= f.order_number %></td>
+            <td><%= f.employment_type === 'GUARANTOR' ? 'كفيل: ' + (f.guarantor_name || '—') : 'موظف' %><br><small><%= BANK_AR[f.bank] || '—' %> <%= f.employer ? '· ' + f.employer : '' %></small></td>
+            <td><%- f.letter_status === 'RECEIVED' ? '<span class="badge-active">مستلم</span>' : '<span class="status-pill st-READY">بانتظار الكتاب</span>' %></td>
+            <td><span class="status-pill st-<%= f.status === 'ACTIVE' ? 'CONFIRMED' : f.status === 'CLOSED' ? 'COMPLETED' : 'PENDING_CONFIRMATION' %>"><%= f.status === 'ACTIVE' ? 'فعّال' : f.status === 'CLOSED' ? 'مغلق' : 'بانتظار التفعيل' %></span></td>
+            <td><%= formatIQD(f.paid) %> / <%= formatIQD(f.due) %><% if (f.overdue > 0) { %><br><span class="badge-inactive"><%- icon('alert') %> <%= f.overdue %> قسط متأخر</span><% } %></td>
+            <td><a class="btn btn-navy btn-sm" href="/admin/files/<%= f.id %>">فتح</a></td>
+          </tr>
+        <% }) %>
+        <% if (!files.length) { %><tr><td colspan="8" class="text-center text-muted" style="padding:26px">لا دفاتر بعد — تُفتح تلقائيًا مع أي طلب تقسيط.</td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/foot') %>

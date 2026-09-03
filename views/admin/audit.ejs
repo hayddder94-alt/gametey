@@ -1,0 +1,51 @@
+<%- include('partials/head') %>
+<%- include('partials/sidebar') %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>سجل العمليات (<%= total %>)</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <form method="get" action="/admin/audit">
+        <select name="action" id="auditFilter" style="padding:8px;border:1.5px solid var(--line);border-radius:8px">
+          <option value="">كل العمليات</option>
+          <% actions.forEach(function(a){ %>
+            <option value="<%= a %>" <%= action === a ? 'selected' : '' %>><%= a %></option>
+          <% }) %>
+        </select>
+      </form>
+<script nonce="<%= cspNonce %>">document.getElementById('auditFilter').addEventListener('change', function(){ this.form.submit(); });</script>
+      <button class="btn btn-red btn-sm" id="clearAuditBtn">مسح السجل بالكامل</button>
+    </div>
+  </div>
+  <div class="panel-body tight table-wrap">
+    <table class="data">
+      <thead><tr><th>#</th><th>المستخدم</th><th>العملية</th><th>الكيان</th><th>القيمة السابقة</th><th>القيمة الجديدة</th><th>الوقت</th></tr></thead>
+      <tbody>
+        <% logs.forEach(function(l){ %>
+          <tr>
+            <td><%= l.id %></td>
+            <td><%= l.username %></td>
+            <td><b><%= l.action %></b></td>
+            <td><%= l.entity_type %><%= l.entity_id ? ' #' + l.entity_id : '' %></td>
+            <td class="audit-detail"><%= l.old_value %></td>
+            <td class="audit-detail"><%= l.new_value %></td>
+            <td><%= fmtDate(l.created_at) %></td>
+          </tr>
+        <% }) %>
+        <% if (!logs.length) { %>
+          <tr><td colspan="7" class="text-center text-muted" style="padding:30px">لا توجد عمليات مسجلة.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<% if (pages > 1) { %>
+<div class="pagination">
+  <% for (let i = 1; i <= Math.min(pages, 40); i++) { %>
+    <% if (i === page) { %><span class="current"><%= i %></span><% } else { %><a href="/admin/audit?page=<%= i %><%= action ? '&action=' + encodeURIComponent(action) : '' %>"><%= i %></a><% } %>
+  <% } %>
+</div>
+<% } %>
+
+<%- include('partials/foot') %>

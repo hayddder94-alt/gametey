@@ -1,0 +1,36 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main id="main-content">
+<div class="page-head">
+  <div class="container"><h1>سلة التسوق</h1><p>راجع منتجاتك قبل إتمام الطلب — سلتك محفوظة حتى بعد إغلاق الصفحة</p></div>
+</div>
+
+<div class="container">
+  <div class="steps">
+    <div class="step active">1. السلة</div>
+    <div class="step">2. مراجعة الطلب</div>
+    <div class="step">3. بياناتك</div>
+    <div class="step">4. إرسال عبر واتساب</div>
+  </div>
+
+  <div class="cart-layout">
+    <div id="cartItemsArea">
+      <div class="skeleton" style="height:110px;margin-bottom:12px"></div>
+      <div class="skeleton" style="height:110px"></div>
+    </div>
+
+    <div class="cart-summary" id="cartSummary" style="display:none">
+      <h3 style="margin-top:0">ملخص السلة</h3>
+      <div id="summaryRows"></div>
+      <div class="sum-row total"><span>الإجمالي النهائي</span><span id="grandTotal">—</span></div>
+      <button type="button" class="btn btn-gold btn-lg btn-block mt-2" id="proceedBtn">متابعة لمراجعة الطلب</button>
+      <a class="btn btn-ghost btn-block mt-1" href="/products">مواصلة التسوق</a>
+    </div>
+  </div>
+</div>
+<div style="height:50px"></div>
+<script src="/js/vendor/dompurify.min.js"></script>
+<script src="/js/cart-page.js"></script>
+</main>
+<%- include('partials/footer') %>

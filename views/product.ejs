@@ -1,0 +1,188 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main-content">
+<script type="application/ld+json">
+<%- jsonSafe({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: product.name,
+  description: product.short_description || product.name,
+  image: product.image,
+  offers: {
+    "@type": "Offer",
+    price: product.cash_price - product.discount_amount,
+    priceCurrency: "IQD",
+    availability: product.stock_status === 'OUT_OF_STOCK' ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+    seller: { "@type": "Organization", name: settings.COMPANY_NAME }
+  }
+}) %>
+</script>
+<script type="application/ld+json">
+<%- jsonSafe({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: canonicalBase + "/" },
+    { "@type": "ListItem", position: 2, name: product.category_name || "المنتجات", item: canonicalBase + "/products" },
+    { "@type": "ListItem", position: 3, name: product.name, item: canonicalBase + "/product/" + product.slug }
+  ]
+}) %>
+</script>
+
+<% const netCash = product.cash_price - product.discount_amount; %>
+<div class="container">
+  <div class="product-layout">
+    <!-- المعرض -->
+    <div>
+      <div class="gallery-main" id="galleryMain">
+        <img id="galleryImg" src="<%= product.image || '/img/placeholder.svg' %>" alt="<%= product.name %>">
+      </div>
+      <% if (product.images.length > 1) { %>
+        <div class="gallery-thumbs">
+          <% product.images.forEach(function(img, i){ %>
+            <button type="button" data-src="<%= img.path %>" class="<%= i === 0 ? 'active' : '' %>"><img src="<%= img.path %>" alt="<%= product.name %> صورة <%= i+1 %>" loading="lazy"></button>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- المعلومات -->
+    <div>
+      <h1 class="pd-name"><%= product.name %></h1>
+      <div class="pd-meta">
+        <% if (product.category_name) { %><a class="tag" href="/products?category=<%= encodeURIComponent(product.category_slug) %>"><%= product.category_name %></a><% } %>
+        <span class="p-stock <%= product.stock_status === 'IN_STOCK' ? 'in' : product.stock_status === 'LOW_STOCK' ? 'low' : 'out' %>">
+          <%= product.stock_status === 'IN_STOCK' ? icon('check') + ' متوفر في المعرض' : product.stock_status === 'LOW_STOCK' ? icon('alert') + ' كمية محدودة' : icon('x') + ' غير متوفر حاليًا' %>
+        </span>
+      </div>
+      <% if (product.short_description) { %><p style="color:var(--muted);margin-top:0"><%= product.short_description %></p><% } %>
+
+      <div class="pd-price-box">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="pd-price" id="cashPriceDisplay"><%= formatIQD(netCash) %></span>
+          <% if (product.discount_amount > 0) { %>
+            <span class="pd-price-old"><%= formatIQD(product.cash_price) %></span>
+            <span class="pd-save">وفرت <%= formatIQD(product.discount_amount) %></span>
+          <% } %>
+        </div>
+        <% if (product.fees_amount > 0) { %>
+          <div style="font-size:.85rem;color:var(--muted);margin-top:4px">+ <%= formatIQD(product.fees_amount) %> <%= product.fees_label || 'رسوم إضافية' %></div>
+        <% } %>
+
+        <% if (product.stock_status !== 'OUT_OF_STOCK') { %>
+          <div class="method-switch">
+            <button type="button" id="methodCash" class="active"><%- icon('cash') %> دفع نقدي</button>
+            <% if (product.installment_enabled) { %><button type="button" id="methodInstallment"><%- icon('card') %> بالتقسيط</button><% } %>
+          </div>
+
+          <% if (product.installment_enabled) { %>
+            <div class="plan-box hidden" id="planBox">
+              <div class="plan-row"><span>السعر الإجمالي بالتقسيط</span><b><%= formatIQD(product.installment_price) %></b></div>
+              <% if (product.down_payment > 0) { %><div class="plan-row"><span>الدفعة الأولى</span><b><%= formatIQD(product.down_payment) %></b></div><% } %>
+              <div class="plan-row"><span>عدد الأقساط</span><b><%= product.installment_months %> <%= product.installment_months === 1 ? 'شهر' : 'أشهر' %></b></div>
+              <div class="plan-row"><span>القسط الشهري</span><b><%= formatIQD(product.monthly_payment || Math.ceil(Math.max(0, product.installment_price - product.down_payment) / product.installment_months)) %></b></div>
+              <% if (product.fees_amount > 0) { %><div class="plan-row"><span><%= product.fees_label || 'رسوم إضافية' %></span><b><%= formatIQD(product.fees_amount) %></b></div><% } %>
+            </div>
+          <% } %>
+
+          <!-- الخيارات الديناميكية -->
+          <div id="optionsArea">
+            <% product.options.forEach(function(opt){ %>
+              <div class="option-group" data-option-id="<%= opt.id %>" data-type="<%= opt.input_type %>">
+                <div class="option-label"><%= opt.name %> <% if (opt.required) { %><span class="req">*</span><% } %></div>
+                <% if (opt.input_type === 'text') { %>
+                  <input type="text" class="opt-text" maxlength="200" placeholder="اكتب <%= opt.name %>...">
+                <% } else { %>
+                  <div class="option-choices">
+                    <% opt.values.forEach(function(v){ %>
+                      <button type="button" class="choice-btn" data-value-id="<%= v.id %>" data-delta="<%= v.price_delta %>">
+                        <%= v.label %><% if (v.price_delta > 0) { %> <span class="delta">(+<%= formatIQD(v.price_delta) %>)</span><% } else if (v.price_delta < 0) { %> <span class="delta">(<%= formatIQD(v.price_delta) %>)</span><% } %>
+                      </button>
+                    <% }) %>
+                  </div>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+
+          <div class="qty-row">
+            <span style="font-weight:700">الكمية:</span>
+            <div class="qty-ctrl">
+              <button type="button" id="qtyMinus" aria-label="إنقاص">−</button>
+              <input type="number" id="qtyInput" value="1" min="1" max="50" inputmode="numeric" aria-label="الكمية">
+              <button type="button" id="qtyPlus" aria-label="زيادة">+</button>
+            </div>
+          </div>
+
+          <div class="plan-row" style="font-size:1.15rem;border-top:2px solid var(--line);padding-top:12px">
+            <span style="font-weight:800">الإجمالي الآن</span>
+            <span class="live-total" id="liveTotal"><%= formatIQD(netCash + product.fees_amount) %></span>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+            <button type="button" class="btn btn-outline" id="shareBtn" aria-label="مشاركة المنتج" style="min-width:48px"><%- icon('globe') %></button>
+            <button class="btn btn-gold btn-lg" id="addToCartBtn" style="flex:1;min-width:170px"><%- icon('cart') %> أضف إلى السلة</button>
+            <button class="btn btn-navy btn-lg" id="orderNowBtn" style="flex:1;min-width:150px">اطلب هذا المنتج</button>
+          </div>
+          <a class="btn btn-green btn-block mt-2" href="https://wa.me/<%= settings.WHATSAPP_COMPANY_NUMBER %>?text=<%= encodeURIComponent('السلام عليكم، لدي استفسار عن منتج: ' + product.name) %>" target="_blank" rel="noopener"><%- icon('whatsapp') %> استفسار سريع عبر واتساب</a>
+        <% } else { %>
+          <div class="alert alert-info mt-2">هذا المنتج غير متوفر حاليًا. تواصل معنا عبر واتساب لمعرفة موعد توفره.</div>
+          <a class="btn btn-green btn-block" href="https://wa.me/<%= settings.WHATSAPP_COMPANY_NUMBER %>?text=<%= encodeURIComponent('السلام عليكم، متى يتوفر منتج: ' + product.name + '؟') %>" target="_blank" rel="noopener"><%- icon('whatsapp') %> سألنا عبر واتساب</a>
+        <% } %>
+      </div>
+
+      <% if (product.specs) { %>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head"><h3>المواصفات</h3></div>
+          <div class="panel-body">
+            <ul class="specs-list">
+              <% product.specs.split('\n').filter(Boolean).forEach(function(s){ %>
+                <li><%= s %></li>
+              <% }) %>
+            </ul>
+          </div>
+        </div>
+      <% } %>
+
+      <% if (product.description) { %>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head"><h3>الوصف الكامل</h3></div>
+          <div class="panel-body" style="white-space:pre-line"><%= product.description %></div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (related.length) { %>
+    <section class="section">
+      <div class="section-head"><h2 class="section-title">منتجات مشابهة</h2></div>
+      <div class="products-grid">
+        <% related.forEach(function(p){ %>
+          <%- include('partials/product-card', { product: p }) %>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button type="button" id="lightboxClose" aria-label="إغلاق">✕</button>
+  <img id="lightboxImg" src="" alt="تكبير الصورة">
+</div>
+
+<script nonce="<%= cspNonce %>">
+  window.PRODUCT = <%- jsonSafe({
+    id: product.id, slug: product.slug, name: product.name, image: product.image,
+    cash_price: product.cash_price, discount_amount: product.discount_amount,
+    fees_amount: product.fees_amount, fees_label: product.fees_label,
+    installment_enabled: !!product.installment_enabled,
+    installment_price: product.installment_price, down_payment: product.down_payment,
+    installment_months: product.installment_months,
+    monthly_payment: product.monthly_payment || (product.installment_months > 0 ? Math.ceil(Math.max(0, product.installment_price - product.down_payment) / product.installment_months) : 0),
+    stock_status: product.stock_status,
+    options: product.options.map(function(o){ return { id: o.id, name: o.name, input_type: o.input_type, required: !!o.required, values: o.values.map(function(v){ return { id: v.id, label: v.label, price_delta: v.price_delta }; }) }; }),
+  }) %>;
+</script>
+<script src="/js/product.js"></script>
+</main>
+<%- include('partials/footer') %>

@@ -1,0 +1,31 @@
+<div class="admin-layout">
+  <aside class="admin-side" id="adminSide">
+    <div class="admin-brand">
+      <img src="/img/logo.png" alt="">
+      <div><b><%= settings.COMPANY_NAME %></b><br><small>لوحة الإدارة</small></div>
+    </div>
+    <nav>
+      <a href="/admin" class="<%= currentAdminNav === 'dashboard' ? 'active' : '' %>"><%- icon('home') %> لوحة التحكم</a>
+      <a href="/admin/products" class="<%= currentAdminNav === 'products' ? 'active' : '' %>"><%- icon('box') %> المنتجات</a>
+      <a href="/admin/categories" class="<%= currentAdminNav === 'categories' ? 'active' : '' %>"><%- icon('grid') %> التصنيفات</a>
+      <a href="/admin/orders" class="<%= currentAdminNav === 'orders' ? 'active' : '' %>"><%- icon('file') %> الطلبات</a>
+      <a href="/admin/customers" class="<%= currentAdminNav === 'customers' ? 'active' : '' %>"><%- icon('users') %> العملاء</a>
+      <a href="/admin/files" class="<%= currentAdminNav === 'files' ? 'active' : '' %>"><%- icon('file') %> دفاتر التقسيط</a>
+      <a href="/admin/users" class="<%= currentAdminNav === 'users' ? 'active' : '' %>"><%- icon('lock') %> الحسابات الإدارية</a>
+      <a href="/admin/settings" class="<%= currentAdminNav === 'settings' ? 'active' : '' %>"><%- icon('sliders') %> إعدادات الشركة</a>
+      <a href="/admin/audit" class="<%= currentAdminNav === 'audit' ? 'active' : '' %>"><%- icon('chart') %> سجل العمليات</a>
+      <a href="/" target="_blank"><%- icon('globe') %> عرض المتجر</a>
+    </nav>
+    <div class="side-footer">
+      <b style="color:#fff"><%= admin.full_name %></b><br>
+      <span class="role-chip"><%= ROLE_AR[admin.role] || 'مدير' %></span>
+      <div class="mt-2"><button class="btn btn-red btn-sm btn-block" id="logoutBtn"><%- icon('logout') %> تسجيل الخروج</button></div>
+    </div>
+  </aside>
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <button class="btn btn-ghost btn-sm side-toggle" id="sideToggle"><%- icon('menu') %></button>
+      <h2><%= title %></h2>
+      <span style="margin-inline-start:auto" class="role-chip">ADMIN</span>
+    </div>
+    <div class="admin-content">

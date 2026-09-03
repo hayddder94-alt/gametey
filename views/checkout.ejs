@@ -1,0 +1,35 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main id="main-content">
+<div class="page-head">
+  <div class="container"><h1>مراجعة الطلب</h1><p>تأكد من المنتجات والخيارات وطريقة الدفع قبل إتمام الطلب</p></div>
+</div>
+
+<div class="container">
+  <div class="steps">
+    <div class="step">1. السلة</div>
+    <div class="step active">2. مراجعة الطلب</div>
+    <div class="step">3. بياناتك</div>
+    <div class="step">4. إرسال عبر واتساب</div>
+  </div>
+
+  <div class="checkout-layout">
+    <div id="reviewItems">
+      <div class="skeleton" style="height:120px;margin-bottom:12px"></div>
+      <div class="skeleton" style="height:120px"></div>
+    </div>
+    <div class="cart-summary" id="reviewSummary" style="display:none">
+      <h3 style="margin-top:0">ملخص الطلب</h3>
+      <div id="summaryRows"></div>
+      <div class="sum-row total"><span>الإجمالي النهائي</span><span id="grandTotal">—</span></div>
+      <button class="btn btn-gold btn-lg btn-block mt-2" id="continueBtn">متابعة لإتمام الطلب</button>
+      <a class="btn btn-ghost btn-block mt-1" href="/cart">الرجوع إلى السلة</a>
+    </div>
+  </div>
+</div>
+<div style="height:50px"></div>
+<script src="/js/vendor/dompurify.min.js"></script>
+<script src="/js/checkout.js" data-mode="review"></script>
+</main>
+<%- include('partials/footer') %>
